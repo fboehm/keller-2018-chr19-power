@@ -20,7 +20,8 @@ foo <- dataset.islet.rnaseq$lod.peaks %>%
 dataset.islet.rnaseq$annots %>% 
   filter(chr == 19) %>%
   right_join(foo, by = c("gene_id" = "annot.id")) %>%
-  filter(chrom == 19, chr == 19)
+  filter(chrom == 19, chr == 19) %>%
+  arrange(desc(lod))
 ```
 
 We have 346 local traits (with lods greater than 10) on chromosome 19.
