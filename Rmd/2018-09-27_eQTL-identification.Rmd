@@ -1,0 +1,29 @@
+---
+title: "Identifying local eQTL on chromosome 19"
+author: "Frederick Boehm"
+date: "9/27/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+load("../data/Attie_DO378_eQTL_viewer_v1.Rdata")
+```
+
+```{r}
+foo <- dataset.islet.rnaseq$lod.peaks %>%
+  filter(chrom == 19, lod > 10)
+dataset.islet.rnaseq$annots %>% 
+  filter(chr == 19) %>%
+  right_join(foo, by = c("gene_id" = "annot.id")) %>%
+  filter(chrom == 19, chr == 19)
+```
+
+We have 346 local traits (with lods greater than 10) on chromosome 19.
+
+
+
