@@ -17,14 +17,37 @@ load("../data/Attie_DO378_eQTL_viewer_v1.Rdata")
 ```{r}
 foo <- dataset.islet.rnaseq$lod.peaks %>%
   filter(chrom == 19, lod > 10)
-dataset.islet.rnaseq$annots %>% 
+ (dat <- dataset.islet.rnaseq$annots %>% 
   filter(chr == 19) %>%
   right_join(foo, by = c("gene_id" = "annot.id")) %>%
   filter(chrom == 19, chr == 19) %>%
   arrange(desc(lod))
+ )
 ```
 
 We have 346 local traits (with lods greater than 10) on chromosome 19.
 
+Let's create a histogram of the QTL peak positions.
 
+```{r}
+hist(dat$pos)
+```
+
+
+*Asah2* has a LOD above 100 and is near the center of the chromosome. The four genes with greater LODs are not near the middle of the chromosome. It also looks like *Asah2* has some interesting biology, per its wikipedia page: https://en.wikipedia.org/wiki/ASAH2
+
+
+
+
+
+```{r}
+dat %>%
+  filter(symbol == "Asah2")
+```
+
+We can then isolate the 
+
+```{r}
+
+```
 
