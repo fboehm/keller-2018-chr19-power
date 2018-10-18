@@ -45,7 +45,7 @@ dat %>%
   filter(symbol == "Asah2")
 ```
 
-We can then isolate the 
+We can then isolate the *Asah2* expression values and store them as a rds file
 
 ```{r}
 
