@@ -74,4 +74,5 @@ s_out <- scan_pvl(probs = gg2,
 
 fn_out <- paste0("pvl-run", run_num, "_", proc_num, "_", paste(phenames, collapse = "_"), ".txt")
 write.table(s_out, fn_out, quote = FALSE)
+devtools::session_info()
 q("no")
