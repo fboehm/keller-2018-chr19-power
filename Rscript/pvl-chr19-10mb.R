@@ -36,12 +36,18 @@ annot <- readRDS("data-to-condor/annot.rds")
 # create matrix of two expression traits
 pheno <- cbind(locals[ , trait_indic, drop = FALSE], asah2)
 rownames(pheno) <- rownames(locals)
-# verify that names match in all objects
-sum(rownames(pheno) == rownames(gg2))
-sum(rownames(pheno) == rownames(kk2))
-sum(rownames(pheno) == colnames(kk2))
-sum(rownames(pheno) == rownames(cc2))
-phenames <- c(trait_id, asah2_id)
+# get only shared subjects with no missing pheno or covariates
+
+# remove subjects with missing data
+
+id2keep <- rownames(locals)
+gg <- geno
+gg2 <- gg[rownames(gg) %in% id2keep, , , drop = FALSE]
+kk <- kinship
+kk2 <- kk[rownames(kk) %in% id2keep, colnames(kk) %in% id2keep, drop = FALSE]
+cc2 <- covar[rownames(covar) %in% id2keep, , drop = FALSE]
+
+
 # define s1 and nsnp
 asah2_index <- annot %>%
   filter(gene_id == asah2_id) %>%
@@ -57,10 +63,10 @@ nsnp <- abs(asah2_index - trait_index) + 1 + 15 + 15
 
 # two-dimensional scan
 library(qtl2pleio)
-s_out <- scan_pvl(probs = geno,
+s_out <- scan_pvl(probs = gg2,
                   pheno = pheno,
-                  kinship = kinship,
-                  addcovar = covar[ , -5], # need to remove column 5 because we have no mice from wave 5
+                  kinship = kk2,
+                  addcovar = cc2[ , -5], # need to remove column 5 because we have no mice from wave 5
                   start_snp = s1,
                   n_snp = nsnp
 )
