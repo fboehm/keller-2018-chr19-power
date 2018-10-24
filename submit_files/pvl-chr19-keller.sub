@@ -18,7 +18,7 @@ error = pvl-$(Process)-run$(run_num).err
 #  output (or "screen output").
 #  $(Process) will be a integer number for each job, starting with "0"
 #  and increasing for the relevant number of jobs.
-executable = ../shell_scripts/keller-pvl-chr2.sh
+executable = ../shell_scripts/pvl-chr19.sh
 arguments = $(Process) $(run_num) 
 output = pvl-$(Process)-run$(run_num).out
 #
