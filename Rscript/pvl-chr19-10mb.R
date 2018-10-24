@@ -14,24 +14,24 @@ print(run_num)
 
 ###############
 
-
+library(tidyverse)
 # load expression traits
-readRDS("data/expr_10mb.rds") -> locals
+readRDS("data-to-condor/expr_10mb.rds") -> locals
 trait_id <- colnames(locals)[trait_indic]
-readRDS("data/expr_asah2.rds") -> asah2
+readRDS("data-to-condor/expr_asah2.rds") -> asah2
 "ENSMUSG00000024887" -> asah2_id
 
 # load chr2 allele probabilities
-readRDS("genoprobs_chr19.rds") -> geno # genoprobs_chr19.rds is on SQUID
+readRDS("genoprobs_chr19-keller.rds") -> geno # genoprobs_chr19.rds is on SQUID
 
-# load kinship matrix (LOCO, ie, for chromosome 2, ie, doesn't use chr2 data)
-readRDS("data/kinship_chr19.rds") -> kinship
+# load kinship matrix (LOCO, ie, for chromosome 2, ie, doesn't use chr2 data-to-condor)
+readRDS("data-to-condor/kinship-chr19-keller.rds") -> kinship
 
 # load covariates
-readRDS("data/addcovar.rds") -> covar
+readRDS("data-to-condor/addcovar-keller.rds") -> covar
 
 # load annot
-annot <- readRDS("data/annot.rds")
+annot <- readRDS("data-to-condor/annot.rds")
 
 # create matrix of two expression traits
 pheno <- cbind(locals[ , trait_indic, drop = FALSE], asah2)

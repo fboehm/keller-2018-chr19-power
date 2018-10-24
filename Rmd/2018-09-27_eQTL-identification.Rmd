@@ -143,4 +143,13 @@ m19_tib %>%
 annot <- readRDS("../data-to-condor/annot.rds")
 ```
 
+## create files for use with condor
+
+```{r}
+saveRDS(K$`19`, "../data-to-condor/kinship-chr19-keller.rds")
+saveRDS(genoprobs$`19`, "../data/genoprobs-chr19-keller.rds")
+saveRDS(dataset.islet.rnaseq$covar, "../data-to-condor/addcovar-keller.rds")
+
+```
+
 
