@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
+We first load the Rdata file from Data Dryad.
+
 ```{r}
 load("../data/Attie_DO378_eQTL_viewer_v1.Rdata")
 ```
@@ -17,7 +19,8 @@ load("../data/Attie_DO378_eQTL_viewer_v1.Rdata")
 ```{r}
 foo <- dataset.islet.rnaseq$lod.peaks %>%
   filter(chrom == 19, lod > 10)
- (dat <- dataset.islet.rnaseq$annots %>% 
+
+(dat <- dataset.islet.rnaseq$annots %>% 
   filter(chr == 19) %>%
   right_join(foo, by = c("gene_id" = "annot.id")) %>%
   filter(chrom == 19, chr == 19) %>%
@@ -25,7 +28,7 @@ foo <- dataset.islet.rnaseq$lod.peaks %>%
  )
 ```
 
-We have 346 local traits (with lods greater than 10) on chromosome 19.
+We have `r nrow(dat)` local traits (with lods greater than 10) on chromosome 19.
 
 Let's create a histogram of the QTL peak positions.
 
@@ -43,11 +46,101 @@ hist(dat$pos)
 ```{r}
 dat %>%
   filter(symbol == "Asah2")
+asah2_id <- dat %>%
+  filter(symbol == "Asah2") %>%
+  select(gene_id) %>%
+  unlist()
 ```
 
-We can then isolate the *Asah2* expression values and store them as a rds file
+We can then isolate the *Asah2* expression values.
 
 ```{r}
+asah2_expr <- dataset.islet.rnaseq$expr[ , colnames(dataset.islet.rnaseq$expr) == asah2_id, drop = FALSE]
+```
+
+
+
+Now, we save the 378 mice by 346 traits - including Asah2 - expression matrix for later use with Condor.
+
+```{r}
+trait_ids <- dat %>% 
+  select(gene_id) %>%
+  unlist()
+```
+
+```{r}
+expr_chr19 <- dataset.islet.rnaseq$expr[ , 
+                           colnames(dataset.islet.rnaseq$expr) %in% trait_ids, 
+                           drop = FALSE]
+```
+
+```{r}
+saveRDS(expr_chr19, file = "../data/chr19_expr.rds")
+```
+
+Now, let's save the expression traits for only those traits with peak positions within 10 Mb of the peak position for *Asah2*.
+
+```{r}
+asah2_pos <- dat %>%
+  filter(symbol == "Asah2") %>%
+  select(pos) %>%
+  unlist()
+trait_ids_10mb <- dat %>% 
+  filter(pos < asah2_pos + 10, pos > asah2_pos - 10) %>%
+  select(gene_id) %>%
+  unlist()
 
 ```
+
+```{r}
+expr_chr19_10mb <- dataset.islet.rnaseq$expr[ , 
+                           colnames(dataset.islet.rnaseq$expr) %in% trait_ids_10mb, 
+                           drop = FALSE]
+```
+
+
+```{r}
+saveRDS(expr_chr19_10mb, file = "../data/chr19_expr_10mb.rds")
+```
+
+## Examine the map object to see how many markers are spanned by the traits in chr19_expr_10mb.rds
+
+```{r}
+m19 <- map$`19`
+m19_tib <- tibble(marker_id = names(m19), position = m19)
+which(m19_tib$position > 22)[1]
+which(m19_tib$position > 42)[1]
+```
+
+## Save files to data-to-condor for use with CHTC
+
+```{r}
+expr_chr19_10mb %>%
+  as_tibble() %>%
+  select( - asah2_id) %>%
+  saveRDS(file = "../data-to-condor/expr_10mb.rds")
+expr_chr19_10mb %>%
+  as_tibble() %>%
+  select(asah2_id) %>%
+  saveRDS(file = "../data-to-condor/expr_asah2.rds")
+```
+
+## Make a marker index object
+
+We need a table that tells us, for each trait, where is its univariate peak, and which marker index in `m19`, the map object for chrom 19, it corresponds to.
+
+```{r}
+m19_tib %>%
+  mutate(marker_index = 1:nrow(m19_tib)) %>%
+  right_join(dat, by = c("marker_id" = "marker.id")) %>%
+  filter(pos < asah2_pos + 10, pos > asah2_pos - 10) %>%
+  select(- position) %>%
+  arrange(desc(lod)) %>%
+  saveRDS(file = "../data-to-condor/annot.rds")
+```
+
+```{r}
+annot <- readRDS("../data-to-condor/annot.rds")
+```
+
 
