@@ -27,7 +27,7 @@ output = pvl-$(Process)-run$(run_num).out
 #  used if there were any other files needed for the executable to run.
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-transfer_input_files = ../data-to-condor,../Rscript,../shell_scripts,http://proxy.chtc.wisc.edu/SQUID/fjboehm/R351-2018-10-24.tar.gz,http://proxy.chtc.wisc.edu/SQUID/fjboehm/genoprobs_chr19-keller.rds,http://proxy.chtc.wisc.edu/SQUID/SLIBS.tar.gz
+transfer_input_files = ../data-to-condor,../Rscript,../shell_scripts,http://proxy.chtc.wisc.edu/SQUID/fjboehm/R-2018-09-30a.tar.gz,http://proxy.chtc.wisc.edu/SQUID/fjboehm/genoprobs_chr19-keller.rds,http://proxy.chtc.wisc.edu/SQUID/SLIBS.tar.gz
 #
 # Tell HTCondor what amount of compute resources
 #  each job will need on the computer where it runs.
@@ -43,5 +43,5 @@ requirements = (OpSysMajorVer == 7)
 +WantGlideIn = true
 
 # Tell HTCondor to run instances of our job: 
-queue 79
+queue 7
 
