@@ -14,7 +14,7 @@ print(run_num)
 
 ###############
 
-library(tidyverse)
+library(dplyr)
 # load expression traits
 readRDS("data-to-condor/expr_10mb.rds") -> locals
 trait_id <- colnames(locals)[trait_indic]
