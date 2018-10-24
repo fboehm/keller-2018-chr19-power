@@ -36,7 +36,7 @@ request_memory = 1GB
 request_disk = 1GB
 #
 # extra stuff for 'materialize'
-requirements = (OpSysMajorVer == 7)
+requirements = (OpSysMajorVer == 7) || (OpSysMajorVer == 6)
 
 # which computer grids to use:
 +WantFlocking = true
