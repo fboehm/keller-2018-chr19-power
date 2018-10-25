@@ -22,7 +22,7 @@ readRDS("data-to-condor/expr_asah2.rds") -> asah2
 "ENSMUSG00000024887" -> asah2_id
 
 # load chr2 allele probabilities
-readRDS("genoprobs-chr19-keller.rds") -> geno # genoprobs_chr19.rds is on SQUID
+readRDS("genoprobs_chr19-keller.rds") -> geno # genoprobs_chr19.rds is on SQUID
 
 # load kinship matrix (LOCO, ie, for chromosome 2, ie, doesn't use chr2 data-to-condor)
 readRDS("data-to-condor/kinship-chr19-keller.rds") -> kinship
