@@ -16,7 +16,7 @@ print(run_num)
 
 library(dplyr)
 # load expression traits
-readRDS("data-to-condor/expr_10mb.rds") -> locals
+readRDS("data-to-condor/chr19_expr_10mb.rds") -> locals
 trait_id <- colnames(locals)[trait_indic]
 readRDS("data-to-condor/expr_asah2.rds") -> asah2
 "ENSMUSG00000024887" -> asah2_id
