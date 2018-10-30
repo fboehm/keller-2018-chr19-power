@@ -69,7 +69,7 @@ s_out <- scan_pvl(probs = gg2,
 #                  addcovar = cc2[ , -5], # need to remove column 5 because we have no mice from wave 5
                   covariates = cc2[ , -5], # need to remove column 5 because we have no mice from wave 5
                   start_snp = s1,
-                  n_snp = nsnp
+                  n_snp = nsnp, max_iter = 10000
 )
 
 
