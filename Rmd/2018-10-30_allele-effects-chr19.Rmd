@@ -1,7 +1,7 @@
 ---
-title: "Identifying local eQTL on chromosome 19"
+title: "Examining allele effects for chromosome 19 traits"
 author: "Frederick Boehm"
-date: "9/27/2018"
+date: "10/30/2018"
 output: github_document
 ---
 
@@ -74,10 +74,6 @@ expr_chr19 <- dataset.islet.rnaseq$expr[ ,
                            drop = FALSE]
 ```
 
-```{r}
-saveRDS(expr_chr19, file = "../data/chr19_expr.rds")
-```
-
 Now, let's save the expression traits for only those traits with peak positions within 10 Mb of the peak position for *Asah2*.
 
 ```{r}
@@ -99,9 +95,6 @@ expr_chr19_10mb <- dataset.islet.rnaseq$expr[ ,
 ```
 
 
-```{r}
-saveRDS(expr_chr19_10mb, file = "../data/chr19_expr_10mb.rds")
-```
 
 ## Examine the map object to see how many markers are spanned by the traits in chr19_expr_10mb.rds
 
@@ -112,44 +105,46 @@ which(m19_tib$position > 22)[1]
 which(m19_tib$position > 42)[1]
 ```
 
-## Save files to data-to-condor for use with CHTC
+## Calculate allele effects for Asah2
 
 ```{r}
-expr_chr19_10mb %>%
-  as_tibble() %>%
-  select( - asah2_id) %>%
-  saveRDS(file = "../data-to-condor/expr_10mb.rds")
-expr_chr19_10mb %>%
-  as_tibble() %>%
-  select(asah2_id) %>%
-  saveRDS(file = "../data-to-condor/expr_asah2.rds")
-```
-
-## Make a marker index object
-
-We need a table that tells us, for each trait, where is its univariate peak, and which marker index in `m19`, the map object for chrom 19, it corresponds to.
-
-```{r}
-m19_tib %>%
-  mutate(marker_index = 1:nrow(m19_tib)) %>%
-  right_join(dat, by = c("marker_id" = "marker.id")) %>%
-  filter(pos < asah2_pos + 10, pos > asah2_pos - 10) %>%
-  select(- position) %>%
-  arrange(desc(lod)) %>%
-  saveRDS(file = "../data-to-condor/annot.rds")
+library(qtl2)
 ```
 
 ```{r}
-annot <- readRDS("../data-to-condor/annot.rds")
+s1c_asah2 <- scan1coef(genoprobs = genoprobs[, 19], pheno = asah2_expr, kinship = K$`19`, addcovar = dataset.islet.rnaseq$covar[ , -5], reml = TRUE)
 ```
-
-## create files for use with condor
 
 ```{r}
-saveRDS(K$`19`, "../data-to-condor/kinship-chr19-keller.rds")
-saveRDS(genoprobs$`19`, "../data/genoprobs-chr19-keller.rds")
-saveRDS(dataset.islet.rnaseq$covar, "../data-to-condor/addcovar-keller.rds")
-
+plot_coefCC(x = s1c_asah2, map = map)
 ```
+
+## Calculate allele effects for many traits near Asah2
+
+```{r}
+traits_of_interest <- c("ENSMUSG00000038658", 
+                        "ENSMUSG00000024766",
+                        "ENSMUSG00000087303", 
+                        "ENSMUSG00000087112", 
+                        "ENSMUSG00000079344")
+expr_for_ae <- expr_chr19[ , colnames(expr_chr19) %in% traits_of_interest]
+
+s1c_out <- list()
+
+for (i in 1:length(traits_of_interest)){
+  s1c_out[[i]] <- scan1coef(genoprobs = genoprobs[, 19], pheno = expr_for_ae[ , i], kinship = K$`19`, addcovar = dataset.islet.rnaseq$covar[ , -5], reml = TRUE)
+
+}
+```
+
+```{r}
+for (i in 1:length(s1c_out)){
+  plot_coefCC(x = s1c_out[[i]], map = map)
+}
+```
+
+
+
+
 
 
