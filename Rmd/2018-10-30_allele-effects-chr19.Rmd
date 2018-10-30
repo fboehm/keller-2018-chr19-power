@@ -126,13 +126,17 @@ traits_of_interest <- c("ENSMUSG00000038658",
                         "ENSMUSG00000024766",
                         "ENSMUSG00000087303", 
                         "ENSMUSG00000087112", 
-                        "ENSMUSG00000079344")
+                        "ENSMUSG00000079344", 
+                        "ENSMUSG00000089952", 
+                        "ENSMUSG00000052085", 
+                        "ENSMUSG00000056078")
 expr_for_ae <- expr_chr19[ , colnames(expr_chr19) %in% traits_of_interest]
 
 s1c_out <- list()
 
 for (i in 1:length(traits_of_interest)){
   s1c_out[[i]] <- scan1coef(genoprobs = genoprobs[, 19], pheno = expr_for_ae[ , i], kinship = K$`19`, addcovar = dataset.islet.rnaseq$covar[ , -5], reml = TRUE)
+  names(s1c_out)[i] <- traits_of_interest[i]
 
 }
 ```
@@ -143,8 +147,61 @@ for (i in 1:length(s1c_out)){
 }
 ```
 
+## `get_effects` to extract founder allele effects at each trait's QTL peak position
+
+```{r}
+library(qtl2pleio)
+```
+
+```{r}
+asah2_peak_marker_index <- which(m19 %in% asah2_pos)
+asah2_peak_effects <- get_effects(marker_index = 970, allele_effects_matrix = s1c_asah2, map = m19)
+```
+
+```{r}
+# get peak positions (in Mb) for all traits in traits_of_interest
+d1 <- dat[dat$gene_id %in% traits_of_interest, ]
+(d2 <- d1[match(x = traits_of_interest, table = d1$gene_id), ])
+```
+
+```{r}
+# get founder allele effects at each trait's peak position
+ae <- list()
+for (i in 1:length(traits_of_interest)){
+  marker_index <- which(m19 %in% d2$pos[i])
+  ae[[i]] <- get_effects(marker_index = marker_index, 
+              allele_effects_matrix = s1c_out[[i]], 
+              map = m19)
+  names(ae)[i] <- names(s1c_out)[i]
+}
+```
+
+```{r}
+asah2_ae <- as.matrix(asah2_peak_effects) %>% 
+  t()
+rownames(asah2_ae) <- asah2_id
+ae6 <- sapply(FUN = function(x)x, X = ae) %>%
+  t() %>%
+  rbind(asah2_ae)
+cbind(cor(t(ae6)) %>% colnames(), c(traits_of_interest, asah2_id))
+```
 
 
+```{r}
+traits_of_interest
+```
+
+```{r}
+(cor(t(ae6)) -> cormat)
+```
+
+Which gene expression trait is the least correlated with the others?
+
+```{r}
+apply(FUN = prod, X = cormat, MARGIN = 1)
+```
+
+It looks like ENSMUSG00000087303 and ENSMUSG00000024766 are the least correlated with the others, while ENSMUSG00000089952 has the highest mean correlation with the other traits. Note also that the minimal (absolute value) entry in the correlation matrix above is between ENSMUSG00000087303 and ENSMUSG00000024766.
 
 
 
