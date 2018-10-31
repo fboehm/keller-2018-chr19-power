@@ -32,16 +32,16 @@ transfer_input_files = ../data-to-condor,../Rscript,../shell_scripts,http://prox
 # Tell HTCondor what amount of compute resources
 #  each job will need on the computer where it runs.
 request_cpus = 1
-request_memory = 1GB
-request_disk = 1GB
+request_memory = 1.5GB
+request_disk = 1.5GB
 #
 # extra stuff for 'materialize'
 requirements = (OpSysMajorVer == 7) || (OpSysMajorVer == 6)
 
 # which computer grids to use:
 +WantFlocking = true
-+WantGlideIn = false
++WantGlideIn = true
 
 # Tell HTCondor to run instances of our job: 
-queue 7
+queue 240
 

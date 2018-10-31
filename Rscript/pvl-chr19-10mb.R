@@ -60,8 +60,8 @@ trait_index <- annot %>%
   select(marker_index) %>%
   unlist()
 s1 <- min(asah2_index, trait_index) - 15
-#nsnp <- abs(asah2_index - trait_index) + 1 + 15 + 15
-nsnp <- 5 # for trial runs only!
+nsnp <- abs(asah2_index - trait_index) + 1 + 15 + 15
+#nsnp <- 5 # for trial runs only!
 
 # two-dimensional scan
 library(qtl2pleio)
