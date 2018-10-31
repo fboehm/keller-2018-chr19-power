@@ -20,6 +20,8 @@ readRDS("data-to-condor/chr19_expr_10mb.rds") -> locals
 trait_id <- colnames(locals)[trait_indic]
 readRDS("data-to-condor/expr_asah2.rds") -> asah2
 "ENSMUSG00000024887" -> asah2_id
+# define phenames
+phenames <- c(trait_id, asah2_id)
 
 # load chr2 allele probabilities
 readRDS("genoprobs_chr19-keller.rds") -> geno # genoprobs_chr19.rds is on SQUID

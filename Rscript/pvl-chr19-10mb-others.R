@@ -30,6 +30,8 @@ library(dplyr)
 # load expression traits
 readRDS("data-to-condor/chr19_expr_10mb.rds") -> locals
 trait_id <- colnames(locals)[trait_indic]
+# define phenames 
+phenames <- c(trait_id, lead_id)
 
 # load chr2 allele probabilities
 readRDS("genoprobs_chr19-keller.rds") -> geno # genoprobs_chr19.rds is on SQUID
@@ -44,7 +46,7 @@ readRDS("data-to-condor/addcovar-keller.rds") -> covar
 annot <- readRDS("data-to-condor/annot.rds")
 
 # create matrix of two expression traits
-pheno <- cbind(locals[ , trait_indic, drop = FALSE], asah2)
+pheno <- cbind(locals[ , trait_indic, drop = FALSE], locals[ , colnames(locals) %in% lead_id, drop = FALSE])
 rownames(pheno) <- rownames(locals)
 # get only shared subjects with no missing pheno or covariates
 
