@@ -1,0 +1,106 @@
+---
+title: "Identify jobs that produced a .Rout file yet not a .txt file"
+author: "Frederick Boehm"
+date: "11/4/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In monitoring the jobs for runs 3102 and 3101, I noticed that some jobs, ie, some pairs of traits, encountered an error when running `scan_pvl`. I'm writing this document to investigate why that happened.
+
+I've now terminated the jobs that didn't complete, and I've downloaded the .txt and .Rout files for runs 3101 and 3102 to subdirectories in the "results" directory of this repository.
+
+```{bash}
+ls ../results/pvl-run3101/*.txt | wc
+ls ../results/pvl-run3101/*.Rout | wc
+```
+
+```{bash}
+ls ../results/pvl-run3102/*.txt | wc
+ls ../results/pvl-run3102/*.Rout | wc
+```
+
+
+## Get the filenames for Rout and txt files in each run
+
+```{r}
+(dir("../results/pvl-run3101/", pattern = ".txt") -> r1_txt)
+(dir("../results/pvl-run3101/", pattern = ".Rout") -> r1_Rout)
+```
+
+What we really want is the job number for each file. For the .Rout files, it's the number between the hyphen and the period. For the .txt files, it's the number between the first two underscores.
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+r1_txt_nums <- r1_txt %>%
+  str_split(pattern = "_") %>%
+  sapply(FUN = function(x)x[2]) %>%
+  as.numeric()
+r1_txt_gene_names <- r1_txt %>%
+  str_split(pattern = "_") %>%
+  sapply(FUN = function(x)x[3:4]) %>%
+  t()
+foo <- r1_txt_gene_names[ , 2] %>%
+  str_split_fixed(pattern = ".txt", n = 2) %>%
+  as_tibble() %>%
+  select(V1) %>%
+  mutate(txt_gene2 = V1) %>%
+  select(txt_gene2)
+tib_txt <- tibble(txt_fn = r1_txt, 
+       txt_num = r1_txt_nums, 
+       txt_gene1 = r1_txt_gene_names[, 1], txt_gene2 = unlist(foo)
+       )
+
+```
+
+```{r}
+bar <- r1_Rout %>%
+  str_split_fixed(pattern = "-", n = 2) %>%
+  as_tibble() %>%
+  select(V2) %>%
+  unlist() %>%
+  str_split_fixed(pattern = ".Rout", n = 2) %>%
+  as_tibble() %>%
+  select(V1) %>%
+  mutate(Rout_num = V1) %>%
+  select(Rout_num) %>% 
+  unlist() %>%
+  as.numeric()
+```
+
+```{r}
+bar[!(bar %in% tib_txt$txt_num)]
+
+```
+
+We see that job `r bar[!(bar %in% tib_txt$txt_num)]` returned a .Rout file but didn't return a txt file. Let's look at its .Rout file.
+
+```{bash}
+tail ../results/pvl-run3101/pvl_run3101-18.Rout
+```
+
+
+
+We see that it encountered an error due to a singular matrix when calculating Sigma within `scan_pvl`. 
+
+```{r}
+trait_indic <- 18 + 1
+readRDS("../data-to-condor/chr19_expr_10mb.rds") -> locals
+trait_id <- colnames(locals)[trait_indic]
+readRDS("../data-to-condor/expr_asah2.rds") -> asah2
+"ENSMUSG00000024887" -> asah2_id
+# define phenames
+phenames <- c(trait_id, asah2_id)
+```
+
+Of course - I forgot that I included the original trait itself in the file "chr19_expr_10mb.rds". It failed when I paired that trait with itself.
+
+This could be handled by adding a `stopifnot` line to `scan_pvl`.
+
+
