@@ -2,6 +2,7 @@
 title: "Initial results from power analyses"
 author: "Frederick Boehm"
 date: "`r lubridate::now()`"
+always_allow_html: yes
 output: github_document
 ---
 
