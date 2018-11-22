@@ -3,15 +3,15 @@
 
 # length of scan in number of SNPs
 # which run in the experimental design?
-run_num=3101
+run_num=3103
 # Specify the HTCondor Universe (vanilla is the default and is used
 #  for almost all jobs), the desired name of the HTCondor log file,
 #  and the desired name of the standard error file.  
 #  Wherever you see $(Cluster), HTCondor will insert the queue number
 #  assigned to this set of jobs at the time of submission.
 universe = vanilla
-log = pvl-$(myprocess)-run$(run_num).log
-error = pvl-$(myprocess)-run$(run_num).err
+log = pvl-$(Process)-run$(run_num).log
+error = pvl-$(Process)-run$(run_num).err
 #
 # Specify your executable (single binary or a script that runs several
 #  commands), arguments, and a files for HTCondor to store standard
@@ -19,8 +19,8 @@ error = pvl-$(myprocess)-run$(run_num).err
 #  $(Process) will be a integer number for each job, starting with "0"
 #  and increasing for the relevant number of jobs.
 executable = ../shell_scripts/pvl-chr19-others.sh
-arguments = $(myprocess) $(run_num) 
-output = pvl-$(myprocess)-run$(run_num).out
+arguments = $(Process) $(run_num) 
+output = pvl-$(Process)-run$(run_num).out
 #
 # Specify that HTCondor should transfer files to and from the
 #  computer where each job runs. The last of these lines *would* be
@@ -43,5 +43,5 @@ requirements = (OpSysMajorVer == 7) || (OpSysMajorVer == 6)
 +WantGlideIn = true
 
 # Tell HTCondor to run instances of our job: 
-queue myprocess from run3101-bad-runs
+queue 25
 
