@@ -36,7 +36,7 @@ readRDS("data-to-condor/addcovar-keller.rds") -> covar
 annot <- readRDS("data-to-condor/annot.rds")
 
 # create matrix of two expression traits
-pheno <- cbind(locals[ , trait_indic, drop = FALSE], asah2)
+pheno <- as.matrix(cbind(locals[ , trait_indic, drop = FALSE], asah2))
 rownames(pheno) <- rownames(locals)
 # get only shared subjects with no missing pheno or covariates
 
@@ -65,7 +65,6 @@ nsnp <- 1000
 # two-dimensional scan
 library(qtl2pleio)
 probs = gg2
-pheno = pheno
 kinship = kk2
 addcovar = cc2[ , -5] # need to remove column 5 because we have no mice from wave 5
                   #covariates = cc2[ , -5], # need to remove column 5 because we have no mice from wave 5
