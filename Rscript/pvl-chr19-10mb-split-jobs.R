@@ -107,17 +107,12 @@ if (!is.null(kinship)){
   # covariance matrix estimation
   message(paste0("starting covariance matrices estimation with data from ", length(id2keep), " subjects."))
   # first, run gemma2::MphEM(), by way of calc_covs(), to get Vg and Ve
-  cc_out <- calc_covs(pheno, kinship, max_iter = max_iter, max_prec = max_prec, covariates = addcovar)
+  cc_out <- calc_covs(pheno, kinship, max_iter = 10000, max_prec = 1 / 100000000, covariates = addcovar)
   Vg <- cc_out$Vg
   Ve <- cc_out$Ve
   message("covariance matrices estimation completed.")
   # define Sigma
   Sigma <- calc_Sigma(Vg, Ve, kinship)
-}
-if (is.null(kinship)){
-  # get Sigma for Haley Knott regression without random effect
-  Ve <- var(pheno) # get d by d covar matrix
-  Sigma <- calc_Sigma(Vg = NULL, Ve = Ve, n_mouse = nrow(pheno))
 }
 
 # define Sigma_inv
