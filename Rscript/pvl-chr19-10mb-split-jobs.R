@@ -118,7 +118,7 @@ if (!is.null(kinship)){
 # define Sigma_inv
 Sigma_inv <- solve(Sigma)
 # prepare table of marker indices for each call of scan_pvl
-mytab <- prep_mytab(d_size = d_size, n_snp = n_snp)
+mytab <- prep_mytab(d_size = 2, n_snp = n_snp)
 # subset mytab based on indices for each job, where 25 jobs constitute a single 1000 by 1000 marker scan
 s_index <- (proc_num %% 25) * 40000 # each 2d scan - 1000 by 1000 markers - is broken into 25 jobs; each job is 40000 model fits, ie, 200 by 200 grid
 mytab_sub <- mytab[(s_index + 1):(s_index + 40000), ]
