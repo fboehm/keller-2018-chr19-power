@@ -1,0 +1,33 @@
+---
+title: "Identifying missing condor jobs"
+author: "Frederick Boehm"
+date: "11/22/2018"
+output: html_document
+---
+
+The goal is to make a list of the condor jobs that still need to be run, ie, those that failed to run and should be re-run after dividing them into multiple jobs.
+
+```{r}
+library(qtl2chtc)
+```
+
+```{r}
+find_missing_jobs(DIR = "../results/pvl-run3101", njobs = 80, outfile = "run3101-bad-runs"
+                  )
+```
+
+We want to define a common region for all scans, so that we aren't changing the scan region for each trait.
+
+From the file "2018-09-27_eQTL-identification.Rmd", we see that the traits' peaks range from marker index 485 to 1361. Thus, we need to take a superset of that interval. Let's look at 400 to 1399, a 1000-marker interval.
+
+We can safely do a 200 by 200 scan in less than 3 days, so each 1000 by 1000 scan is broken into 25 200 by 200 scans.
+
+
+
+
+
+
+
+
+
+
