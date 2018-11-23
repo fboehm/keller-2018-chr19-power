@@ -68,7 +68,11 @@ probs = gg2
 kinship = kk2
 addcovar = cc2[ , -5] # need to remove column 5 because we have no mice from wave 5
                   #covariates = cc2[ , -5], # need to remove column 5 because we have no mice from wave 5
+<<<<<<< HEAD
+start_snp = s1
+=======
 #start_snp = s1
+>>>>>>> cfee50398e6545f8e9d358ae2ff0ea232f62308f
 n_snp = nsnp
 max_iter = 10000
 # code below is from scan_pvl's code
@@ -128,7 +132,11 @@ Sigma_inv <- solve(Sigma)
 # prepare table of marker indices for each call of scan_pvl
 mytab <- prep_mytab(d_size = d_size, n_snp = n_snp)
 # subset mytab based on indices for each job, where 25 jobs constitute a single 1000 by 1000 marker scan
+<<<<<<< HEAD
+s_index <- ((proc_num + 1) %% 25) * 40000 # each 2d scan is broken into 25 jobs; each job is 40000 model fits, ie, 200 by 200 grid
+=======
 s_index <- (proc_num %% 25) * 40000 # each 2d scan - 1000 by 1000 markers - is broken into 25 jobs; each job is 40000 model fits, ie, 200 by 200 grid
+>>>>>>> cfee50398e6545f8e9d358ae2ff0ea232f62308f
 mytab_sub <- mytab[(s_index + 1):(s_index + 40000), ]
 # set up parallel analysis
 list_result <- parallel::mclapply(
