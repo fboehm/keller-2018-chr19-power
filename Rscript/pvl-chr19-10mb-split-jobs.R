@@ -6,7 +6,7 @@ print(args)
 print(args$argname)
 proc_num <- as.numeric(args$argname)
 print(proc_num)
-trait_indic <- proc_num + 1 # define hot_indic 
+trait_indic <- proc_num %/% 25 + 1 # define trait_indic 
 run_num <- as.numeric(args$run_num)
 print(run_num)
 #(nsnp <- as.numeric(args$nsnp))
