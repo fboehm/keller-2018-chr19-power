@@ -148,18 +148,16 @@ mytab_sub$loglik <- unlist(list_result)
 mm <- dimnames(probs)[[3]][start_snp:(start_snp + n_snp - 1)] # markers for the entire scan
 m1 <- rep(mm, times = 40)
 ## m2 is the tricky part, because it depends on job number
-# job 0: 1 to 40
-# job 1: 41 to 80
-# job 24: 961 to 1000
-# job 25: 1 to 40
+# job 0: 1 to 40 with trait 1
+# job 1: 41 to 80 (tr1)
+# job 24: 961 to 1000 (with trait 1)
+# job 25: 1 to 40 with trait 2
 m2_ind <- 40 * (proc_num %/% 25) 
 m2_pre <- mm[(m2_ind + 1):(m2_ind + 40)]
 m2 <- rep(m2_pre, each = 1000)
 mytab2 <- tibble::as_tibble(m1, m2)
 mytab2$loglik <- mytab$loglik
-#########
-
-
+## save results
 fn_out <- paste0("pvl-run", run_num, "_", proc_num, "_", paste(phenames, collapse = "_"), ".txt")
 write.table(s_out, fn_out, quote = FALSE)
 devtools::session_info()
