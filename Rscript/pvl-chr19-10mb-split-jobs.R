@@ -156,7 +156,7 @@ m2_ind <- 40 * (proc_num %/% 25)
 m2_pre <- mm[(m2_ind + 1):(m2_ind + 40)]
 m2 <- rep(m2_pre, each = 1000)
 mytab2 <- tibble::as_tibble(m1, m2)
-mytab2$loglik <- mytab$loglik
+mytab2$loglik <- mytab_sub$loglik
 ## save results
 fn_out <- paste0("pvl-run", run_num, "_", proc_num, "_", paste(phenames, collapse = "_"), ".txt")
 write.table(s_out, fn_out, quote = FALSE)
