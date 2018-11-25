@@ -159,6 +159,8 @@ mytab2 <- tibble::as_tibble(m1, m2)
 mytab2$loglik <- mytab_sub$loglik
 ## save results
 fn_out <- paste0("pvl-run", run_num, "_", proc_num, "_", paste(phenames, collapse = "_"), ".txt")
-write.table(s_out, fn_out, quote = FALSE)
+write.table(mytab2, fn_out, quote = FALSE)
 devtools::session_info()
 q("no")
+
+
