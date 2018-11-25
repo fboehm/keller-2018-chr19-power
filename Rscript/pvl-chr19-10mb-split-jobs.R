@@ -11,7 +11,7 @@ run_num <- as.numeric(args$run_num)
 print(run_num)
 #(nsnp <- as.numeric(args$nsnp))
 #(s1 <- as.numeric(args$s1))
-
+start_snp <- 400 # full scan is 1000 by 1000 and starts at index 400 in probs object
 ###############
 
 library(dplyr)
@@ -120,7 +120,13 @@ Sigma_inv <- solve(Sigma)
 # prepare table of marker indices for each call of scan_pvl
 mytab <- prep_mytab(d_size = 2, n_snp = n_snp)
 # subset mytab based on indices for each job, where 25 jobs constitute a single 1000 by 1000 marker scan
-s_index <- (proc_num %% 25) * 40000 # each 2d scan - 1000 by 1000 markers - is broken into 25 jobs; each job is 40000 model fits, ie, 200 by 200 grid
+s_index <- (proc_num %% 25) * 40000 # each 2d scan - 1000 by 1000 markers - is broken into 25 jobs; each job is 40000 model fits, 
+# ie, 200 by 200 grid - NO! this is wrong.
+# each job is 40k model fits, but it is not a 200 by 200 grid, due
+# to the way that we make mytab.
+# First index of mytab is rep(1:1000, times = 40), ie, it runs 1 to 1000 
+# and repeats 40 times
+#s_index tells us where, in mytab, to start the subsetting to get mytab_sub
 mytab_sub <- mytab[(s_index + 1):(s_index + 40000), ]
 # set up parallel analysis
 list_result <- parallel::mclapply(
@@ -130,14 +136,26 @@ list_result <- parallel::mclapply(
                                   probs = probs,
                                   inv_S = Sigma_inv,
                                   S = Sigma,
-                                  start_snp = 1, # set start_snp = 1 and use mytab_sub 
+                                  start_snp = start_snp, # set start_snp = 1 and use mytab_sub 
                                   # to indicate which markers to put into design matrix
                                   pheno = pheno,
                                   mc.cores = 1 # use only one core per job; ie, no parallelization at this level!
 )
-mytab$loglik <- unlist(list_result)
-marker_id <- dimnames(probs)[[3]][start_snp:(start_snp + n_snp - 1)]
-mytab2 <- tibble::as_tibble(apply(FUN = function(x) marker_id[x], X = mytab[, -ncol(mytab)], MARGIN = 2))
+mytab_sub$loglik <- unlist(list_result)
+# trick is to get the correct marker ids here!
+
+# first, isolate the 1000 marker ids
+mm <- dimnames(probs)[[3]][start_snp:(start_snp + n_snp - 1)] # markers for the entire scan
+m1 <- rep(mm, times = 40)
+## m2 is the tricky part, because it depends on job number
+# job 0: 1 to 40
+# job 1: 41 to 80
+# job 24: 961 to 1000
+# job 25: 1 to 40
+m2_ind <- 40 * (proc_num %/% 25) 
+m2_pre <- mm[(m2_ind + 1):(m2_ind + 40)]
+m2 <- rep(m2_pre, each = 1000)
+mytab2 <- tibble::as_tibble(m1, m2)
 mytab2$loglik <- mytab$loglik
 #########
 
