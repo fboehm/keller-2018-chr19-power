@@ -107,7 +107,7 @@ if (!is.null(kinship)){
   # covariance matrix estimation
   message(paste0("starting covariance matrices estimation with data from ", length(id2keep), " subjects."))
   # first, run gemma2::MphEM(), by way of calc_covs(), to get Vg and Ve
-  cc_out <- calc_covs(pheno, kinship, max_iter = 10000, max_prec = 1 / 100000000, covariates = addcovar)
+  cc_out <- calc_covs(pheno, kinship, max_iter = 10000, max_prec = 1 / 1000000, covariates = addcovar)
   Vg <- cc_out$Vg
   Ve <- cc_out$Ve
   message("covariance matrices estimation completed.")
@@ -136,12 +136,11 @@ list_result <- parallel::mclapply(
                                   probs = probs,
                                   inv_S = Sigma_inv,
                                   S = Sigma,
-                                  start_snp = start_snp, # set start_snp = 1 and use mytab_sub 
-                                  # to indicate which markers to put into design matrix
+                                  start_snp = 400, 
                                   pheno = pheno,
                                   mc.cores = 1 # use only one core per job; ie, no parallelization at this level!
 )
-mytab_sub$loglik <- unlist(list_result)
+
 # trick is to get the correct marker ids here!
 
 # first, isolate the 1000 marker ids
@@ -152,11 +151,10 @@ m1 <- rep(mm, times = 40)
 # job 1: 41 to 80 (tr1)
 # job 24: 961 to 1000 (with trait 1)
 # job 25: 1 to 40 with trait 2
-m2_ind <- 40 * (proc_num %/% 25) 
+m2_ind <- 40 * (proc_num %% 25) # need two percent signs!! not '%/%'
 m2_pre <- mm[(m2_ind + 1):(m2_ind + 40)]
 m2 <- rep(m2_pre, each = 1000)
-mytab2 <- tibble::as_tibble(m1, m2)
-mytab2$loglik <- mytab_sub$loglik
+mytab2 <- tibble::tibble(marker1 = m1, marker2 = m2, loglik = unlist(list_result)) # use tibble() not as_tibble()
 ## save results
 fn_out <- paste0("pvl-run", run_num, "_", proc_num, "_", paste(phenames, collapse = "_"), ".txt")
 write.table(mytab2, fn_out, quote = FALSE)
