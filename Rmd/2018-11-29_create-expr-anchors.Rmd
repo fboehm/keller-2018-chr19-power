@@ -49,7 +49,7 @@ ENSMUSG00000024766
 ENSMUSG00000087303
 ENSMUSG00000089952
 
-Now, load the Attie data set.
+Now, load the Chr 19 data.
 
 ```{r}
 readRDS("../data-to-condor/chr19_expr_10mb.rds") -> expr
