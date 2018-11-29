@@ -74,11 +74,13 @@ for (i in 1:79){
     select(1:3) %>%
     calc_lrt_tib()
 }
-tibble(gene1 = gene1_79, lrt = lrt)
+(foo <- tibble(gene1 = gene1_79, gene2 = "ENSMUSG00000024887", lrt = lrt))
 ```
 
+
+
 ```{r}
-write_csv(x = tibble(gene1 = gene1_79, lrt = lrt), path = "2018-11-26_lrt-tibble.csv")
+write_csv(x = foo, path = "2018-11-26_lrt-tibble.csv") # these all have gene2 = Asah2
 ```
 
 

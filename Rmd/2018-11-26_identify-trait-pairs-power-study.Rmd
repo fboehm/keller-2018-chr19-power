@@ -17,7 +17,7 @@ If we believe that the three most important considerations are 1. interlocus dis
 
 Let's get the annotation information for the three genes of interest (and Asah2).
 
-## Run 3101
+## Run 3104
 
 
 ```{r}
@@ -27,39 +27,14 @@ library(tidyverse)
 ```
 
 ```{r}
-scans <- list()
-fns <- dir("../results/pvl-run3101/", pattern = ".txt")
-for (i in 1:length(fns)){
-  scans[[i]] <- as_tibble(read.table(file.path("../results/pvl-run3101", fns[i])))
-}
-lrt <- purrr::map_dbl(.x = scans, .f = calc_lrt_tib)
+mytib <- read_csv("2018-11-26_lrt-tibble.csv", rownames_included = FALSE) %>% as_tibble() %>%
+  mutate(lrt = as.numeric(lrt))
 ```
 
 ## Parse file names to recover annotation information
 
 We now parse the file names object `fns`, to recover the annotation information for the LRT values.
 
-```{r}
-library(stringr)
-```
-
-```{r}
-gene1 <- str_split(fns, pattern = "_") %>%
-  purrr::map_chr(.f = function(x)x[3])
-gene2 <- str_split(fns, pattern = "_") %>%
-  purrr::map_chr(.f = function(x)x[4]) %>% 
-  str_split(pattern = ".txt") %>%
-  purrr::map_chr(.f = function(x)x[1])
-jobnum <- str_split(fns, pattern = "_") %>%
-  purrr::map_chr(.f = function(x)x[2]) %>%
-  as.integer()
-runnum <- str_split(fns, pattern = "_") %>%
-  purrr::map_chr(.f = function(x)x[1]) %>%
-  str_remove(pattern = "pvl-run") %>% 
-  as.integer()
-r3101 <- tibble(filename = fns, gene1 = gene1, gene2 = gene2, run = runnum, job = jobnum, lrt = lrt)
-mytib <- r3101
-```
 
 ```{r}
 load("../data/Attie_DO378_eQTL_viewer_v1.Rdata")
@@ -72,7 +47,7 @@ myt <- dataset.islet.rnaseq$annots %>%
   rename(gene1 = gene_id, gene1_symbol = symbol, gene1_middle = middle)
 ```
 
-We want to add the univariate LOD scores for gene2 values.
+We want to add the univariate LOD scores for gene1 values.
 
 ```{r}
 mytib2 <- dataset.islet.rnaseq$lod.peaks %>% 
@@ -82,15 +57,14 @@ mytib2 <- dataset.islet.rnaseq$lod.peaks %>%
   rename(gene1 = annot.id, gene1_lod_peak_pos = pos, gene1_lod = lod)
 ```
 
-## Plot for run 3101
+## Plot for run 3104
 
 Initially, we ignore allele effects patterns.
 
 ```{r}
 # get the position for gene2
-r3101$gene2[1]
-gene2_middle_r3101 <- dataset.islet.rnaseq$annots %>%
-  filter(gene_id == r3101$gene2[1]) %>%
+gene2_middle_r3104 <- dataset.islet.rnaseq$annots %>%
+  filter(gene_id == mytib2$gene2[1]) %>%
   select(middle) %>%
   unlist()
 ```
@@ -103,45 +77,12 @@ library(plotly)
 
 ```{r, out.height = 12, out.width=8}
 pp <- mytib2 %>%
-  filter(run == 3101) %>%
 ggplot() + 
   geom_point(mapping = aes(x = gene1_middle, y = lrt, colour = gene1_lod)) + 
-  geom_vline(xintercept = gene2_middle_r3101)
+  geom_vline(xintercept = gene2_middle_r3104)
 ggplotly(pp)
 ```
-
-
-```{r}
-mytib2 
-```
-
-```{r, out.height = 12, out.width=8}
-mytib3 <- dataset.islet.rnaseq$annots %>%
-  select(gene_id, middle, symbol) %>%
-  right_join(mytib2, by = c("gene_id" = "gene2")) %>%
-  rename(gene2 = gene_id, gene2_middle = middle, gene2_symbol = symbol) %>%
-  as_tibble()
-pp3 <- mytib3 %>%
-  ggplot() + 
-  geom_point(mapping = aes(x = gene1_middle, y = lrt, colour = gene1_lod)) + facet_grid(rows = vars(gene2_symbol)) + geom_vline(aes(xintercept = gene2_middle))
-ggplotly(pp3)
-```
-
-```{r}
-mytib3 %>%
-  filter(gene1_middle < 30.3, gene1_middle > 30)
-```
-
-```{r}
-ids <- mytib3 %>%
-  filter(gene1_middle < 30.3, gene1_middle > 30) %>%
-  select(gene1) %>%
-  unlist()
-
-```
-
-
-## Allele effects
+## Calculate allele effects for all genes of interest
 
 ```{r}
 foo <- dataset.islet.rnaseq$lod.peaks %>%
@@ -185,6 +126,37 @@ which(m19_tib$position > 22)[1]
 which(m19_tib$position > 42)[1]
 ```
 
+```{r}
+s1c_out <- list()
+for (i in 1:ncol(expr_chr19_10mb)){
+  s1c_out[[i]] <- scan1coef(genoprobs = genoprobs[, 19], 
+                            pheno = expr_chr19_10mb[ , i], 
+                            kinship = K$`19`, 
+                            addcovar = dataset.islet.rnaseq$covar[ , -5], 
+                            reml = TRUE
+                            )
+}
+names(s1c_out) <- colnames(expr_chr19_10mb)
+```
+
+
+
+## 3-gene analysis
+
+```{r}
+mytib3 %>%
+  filter(gene1_middle < 30.3, gene1_middle > 30)
+```
+
+```{r}
+ids <- mytib3 %>%
+  filter(gene1_middle < 30.3, gene1_middle > 30) %>%
+  select(gene1) %>%
+  unlist()
+
+```
+
+
 ## Calculate allele effects for Asah2
 
 ```{r}
@@ -205,22 +177,8 @@ plot_coefCC(x = s1c_asah2, map = map)
 ```
 
 
-## Calculate allele effects for all genes of interest
 
-```{r}
-s1c_out <- list()
-for (i in 1:ncol(expr_chr19_10mb)){
-  s1c_out[[i]] <- scan1coef(genoprobs = genoprobs[, 19], 
-                            pheno = expr_chr19_10mb[ , i], 
-                            kinship = K$`19`, 
-                            addcovar = dataset.islet.rnaseq$covar[ , -5], 
-                            reml = TRUE
-                            )
-}
-names(s1c_out) <- colnames(expr_chr19_10mb)
-```
-
-## Allele effects plots for 3 traits
+## Allele effects plots for 3-gene analysis
 
 
 ```{r}
@@ -247,7 +205,7 @@ $$\hat Y = X\hat B$$
 First, we get the fitted values for the Asah2 gene at its peak position.
 
 ```{r}
-which(m19 == asah2_pos) ->index_asah2
+which(m19 == asah2_pos) -> index_asah2
 
 asah2_fitted <- cbind(probs[ , , index_asah2], addcovar) %*% s1c_asah2[index_asah2, ]
 ```
@@ -284,6 +242,114 @@ mt4$fitted_values_corr_with_asah2 <- cor(cbind(asah2_fitted, uhrf2_fitted, gldc_
 
 ```{r}
 mt4
+```
+
+## 5-gene comparison
+
+```{r}
+(ids <- mytib2 %>% 
+  filter(gene1_middle > 28.85, gene1_middle < 29.05) %>%
+  arrange(desc(lrt)) %>%
+  select(gene1) %>% 
+  unlist())
+```
+
+
+
+
+```{r, out.height = 12, out.width=8}
+mytib3 <- dataset.islet.rnaseq$annots %>%
+  select(gene_id, middle, symbol) %>%
+  right_join(mytib2, by = c("gene_id" = "gene2")) %>%
+  rename(gene2 = gene_id, gene2_middle = middle, gene2_symbol = symbol) %>%
+  as_tibble()
+pp3 <- mytib3 %>%
+  ggplot() + 
+  geom_point(mapping = aes(x = gene1_middle, y = lrt, colour = gene1_lod)) + facet_grid(rows = vars(gene2_symbol)) + geom_vline(aes(xintercept = gene2_middle))
+ggplotly(pp3)
+```
+
+
+
+
+
+
+```{r}
+which(names(s1c_out) == ids[1])
+plot_coefCC(s1c_out[[which(names(s1c_out) == ids[1])]], map = map)
+```
+
+
+```{r}
+plot_coefCC(s1c_out[[which(names(s1c_out) == ids[2])]], map = map)
+```
+
+```{r}
+plot_coefCC(s1c_out[[which(names(s1c_out) == ids[3])]], map = map)
+```
+
+```{r}
+plot_coefCC(s1c_out[[which(names(s1c_out) == ids[4])]], map = map)
+```
+
+
+```{r}
+plot_coefCC(s1c_out[[which(names(s1c_out) == ids[5])]], map = map)
+```
+
+
+
+
+```{r}
+ids_pos <- mytib3 %>%
+  filter(gene1_middle > 28.85, gene1_middle < 29.05) %>%
+  select(gene1_lod_peak_pos) %>%
+  unlist()
+```
+
+```{r}
+mt4 <- mytib3 %>%
+  filter(gene1_middle > 28.85, gene1_middle < 29.05)
+mt4$gene1_lod_peak_index <- sapply(FUN = helper, X = as.list(ids_pos))
+  
+mt4 %>% arrange(desc(lrt))
+```
+## Create `probs` object from chrom 19 data
+
+```{r}
+probs <- subset_input(genoprobs$`19`, id2keep = rownames(expr_chr19_10mb))
+addcovar <- subset_input(dataset.islet.rnaseq$covar[, -5], id2keep = rownames(expr_chr19_10mb))
+```
+
+
+
+## Calculate fitted values for each mouse
+
+```{r}
+fitteds <- list()
+for (i in 1:5){
+  fitteds[[i]] <- cbind(probs[ , , mt4$gene1_lod_peak_index[i]], addcovar) %*% s1c_out[[which(names(s1c_out) == ids[i])]][mt4$gene1_lod_peak_index[i], ]
+}
+```
+
+```{r}
+fits5 <- bind_cols(fitteds)
+colnames(fits5) <- mt4$gene1_symbol
+colnames(asah2_fitted) <- "Asah2"
+fits6 <- cbind(fits5, asah2_fitted)
+(cor(fits6) -> ct)
+```
+
+```{r}
+rownames(ct)[1:5] == mt4$gene1_symbol
+mt4$corr_with_asah2_fitted_values <- ct[1:5, 6]
+```
+
+
+```{r}
+mt4 %>%
+  select(gene1_symbol, lrt, gene1_lod, corr_with_asah2_fitted_values) %>%
+  arrange(desc(lrt))
 ```
 
 

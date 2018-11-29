@@ -1,0 +1,61 @@
+---
+title: "Create anchor genes expr file"
+author: "Frederick Boehm"
+date: "11/29/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Since I don't have the expression data for the four anchor genes in a single file, I'll make such a file now.
+
+I know that the filenames for run 3102 contain the names of three anchor genes (four minus one, where the one is Asah2, which is in run 3101). 
+
+```{r}
+library(tidyverse)
+```
+
+
+
+```{r}
+scans <- list()
+fns <- dir("../results/pvl-run3102/", pattern = ".txt")
+for (i in 1:length(fns)){
+  scans[[i]] <- as_tibble(read.table(file.path("../results/pvl-run3102", fns[i])))
+}
+# lrt <- purrr::map_dbl(.x = scans, .f = calc_lrt_tib)
+```
+
+Now, we parse the filenames to get the annotation information.
+
+```{r}
+gene1 <- str_split(fns, pattern = "_") %>%
+  purrr::map_chr(.f = function(x)x[3])
+gene2 <- str_split(fns, pattern = "_") %>%
+  purrr::map_chr(.f = function(x)x[4]) %>% 
+  str_split(pattern = ".txt") %>%
+  purrr::map_chr(.f = function(x)x[1])
+```
+
+```{r}
+table(gene1)
+(table(gene2) %>% names() -> anchors)
+```
+So, we see that the 3 anchor genes are:
+
+ENSMUSG00000024766
+ENSMUSG00000087303
+ENSMUSG00000089952
+
+Now, load the Attie data set.
+
+```{r}
+readRDS("../data-to-condor/chr19_expr_10mb.rds") -> expr
+anchors %in% colnames(expr)
+saveRDS(expr[ , colnames(expr) %in% anchors], file = "../data-to-condor/expr_anchors.rds")
+```
+
+
+
