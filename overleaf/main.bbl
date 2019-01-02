@@ -1,0 +1,111 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.9 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{keller2018genetic}{article}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{10}{}{%
+        {{uniquename=0,uniquepart=base,hash=8f309108ca87c761227824aa9c792aec}{%
+           family={Keller},
+           familyi={K\bibinitperiod},
+           given={Mark\bibnamedelima P},
+           giveni={M\bibinitperiod\bibinitdelim P\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=b0475f97c198ee67ded3d8d2c74c8a5f}{%
+           family={Gatti},
+           familyi={G\bibinitperiod},
+           given={Daniel\bibnamedelima M},
+           giveni={D\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=466153045041a98ec7b7d4902a4a7bb3}{%
+           family={Schueler},
+           familyi={S\bibinitperiod},
+           given={Kathryn\bibnamedelima L},
+           giveni={K\bibinitperiod\bibinitdelim L\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=264e30dc9318ffa2e686c19b53d97a95}{%
+           family={Rabaglia},
+           familyi={R\bibinitperiod},
+           given={Mary\bibnamedelima E},
+           giveni={M\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=ecbfd47fef2f48723d5db16a2a04a68e}{%
+           family={Stapleton},
+           familyi={S\bibinitperiod},
+           given={Donnie\bibnamedelima S},
+           giveni={D\bibinitperiod\bibinitdelim S\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=9e8440ab0343485935a157ea7cf384dc}{%
+           family={Simecek},
+           familyi={S\bibinitperiod},
+           given={Petr},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=5d073b938716078ee75ada05412e18fb}{%
+           family={Vincent},
+           familyi={V\bibinitperiod},
+           given={Matthew},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=7c575de317065cdab312d0e2fae0e03e}{%
+           family={Allen},
+           familyi={A\bibinitperiod},
+           given={Sadie},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=da4c5552d43d12e1171f374e6b0b953d}{%
+           family={Broman},
+           familyi={B\bibinitperiod},
+           given={Aimee\bibnamedelima Teo},
+           giveni={A\bibinitperiod\bibinitdelim T\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=1b4196cf8970455510af267c01e5e40a}{%
+           family={Bacher},
+           familyi={B\bibinitperiod},
+           given={Rhonda},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Genetics Soc America}%
+      }
+      \strng{namehash}{bd458b9e97f2031a5154c61e9a9af4ca}
+      \strng{fullhash}{e269717ec7afe5b9dd11976b9af5866b}
+      \strng{bibnamehash}{bd458b9e97f2031a5154c61e9a9af4ca}
+      \strng{authorbibnamehash}{bd458b9e97f2031a5154c61e9a9af4ca}
+      \strng{authornamehash}{bd458b9e97f2031a5154c61e9a9af4ca}
+      \strng{authorfullhash}{e269717ec7afe5b9dd11976b9af5866b}
+      \field{sortinit}{K}
+      \field{sortinithash}{9fd838a31ba64d981e8f44562bd33f89}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Genetics}
+      \field{title}{Genetic Drivers of Pancreatic Islet Function}
+      \field{year}{2018}
+      \field{pages}{genetics\bibrangedash 300864}
+      \range{pages}{-1}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

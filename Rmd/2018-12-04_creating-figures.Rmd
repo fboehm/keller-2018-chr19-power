@@ -1,0 +1,185 @@
+---
+title: "Creating figures with LRTs"
+author: "Frederick Boehm"
+date: "12/4/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+First, we read in the four tibbles from csv files.
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+read_csv("2018-11-26_lrt-tibble.csv") -> r3104
+read_csv("2018-12-03_lrt-tibble-run3105.csv") -> r3105
+read_csv("2018-12-03_lrt-tibble-run3106.csv") -> r3106
+read_csv("2018-12-03_lrt-tibble-run3107.csv") -> r3107
+(bind_rows(r3104, r3105, r3106, r3107) -> rr)
+```
+
+Next, load the Attie data set from Data Dryad.
+
+```{r}
+load("../data/Attie_DO378_eQTL_viewer_v1.Rdata")
+```
+
+
+We then work with the annotations object.
+
+```{r}
+foo <- dataset.islet.rnaseq$annots %>%
+  select(gene_id, symbol, start, end, middle) 
+rr2 <- foo %>% 
+  right_join(rr, by = c("gene_id" = "gene1")) %>%
+  rename(gene1_symbol = symbol, gene1 = gene_id, gene1_start = start, gene1_end = end, gene1_middle = middle) %>%
+  left_join(foo, by = c("gene2" = "gene_id")) %>%
+  rename(gene2_symbol = symbol, gene2_start = start, gene2_end = end, gene2_middle = middle)
+```
+
+We need to add additional information from univariate QTL analyses for both gene1 and gene2. 
+
+
+
+
+```{r}
+bar <- dataset.islet.rnaseq$lod.peaks %>%
+  filter(chrom == 19)
+rr3 <- bar %>%
+  right_join(rr2, by = c("annot.id" = "gene1")) %>%
+  rename(gene1 = annot.id, gene1_marker.id = marker.id, gene1_pos = pos, gene1_lod = lod) %>%
+  left_join(bar, by = c("gene2" = "annot.id")) %>%
+  rename(gene2_marker.id = marker.id, gene2_pos = pos, gene2_lod = lod) %>%
+  select(- chrom.x, - chrom.y)
+```
+
+## LRT v position
+
+```{r}
+library(plotly)
+```
+
+```{r}
+(pp <- rr3 %>%
+  ggplot() + geom_point(aes(x = gene1_middle, y = lrt, colour = gene1_lod)) + geom_vline(aes(xintercept = gene2_middle)) + xlab("Chromosome 19 position") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol ~ .)
+)
+
+```
+
+```{r}
+ggplotly(pp)
+```
+
+## Arrange the panels by gene2 lod score
+
+```{r}
+(nodup <- rr3 %>%
+  filter(!duplicated(gene2)) %>%
+  arrange(desc(gene2_lod)))
+```
+
+```{r}
+rr3 %>%
+  mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
+  ggplot() + geom_point(aes(x = gene1_middle, y = lrt, colour = gene1_lod)) + geom_vline(aes(xintercept = gene2_middle)) + xlab("Chromosome 19 position") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .)
+ggsave(filename = "2018-12-04_lrt-v-middle-of-gene.jpg")
+ggsave(filename = "2018-12-04_lrt-v-middle-of-gene.svg")
+```
+
+## LRT v univariate LOD by anchor gene
+
+
+```{r}
+rr3 %>%
+  mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
+  ggplot() + geom_point(aes(x = gene1_lod, y = lrt, colour = gene1_lod)) + xlab("Univariate LOD") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .)
+ggsave(filename = "2018-12-04_lrt-v-univariate-lod.jpg")
+ggsave(filename = "2018-12-04_lrt-v-univariate-lod.svg")
+
+```
+
+
+## LRT v correlation (between fitted values)
+
+We want to include our covariates in the fitted values calculations.
+
+We'll use the function `qtl2::fit1`.
+
+```{r}
+library(qtl2)
+```
+
+`rr3$gene1_marker.id` tells us the name of the marker for gene1's LOD peak. So, we'll use it to get the matrix of allele dosages for input to `fit1`. Note that the third list element in the output of `dimnames` gives the marker_id values
+
+```{r}
+dimnames(genoprobs$`19`)[[3]]
+```
+
+Let's read in the expr data for the 80 traits of interest.
+
+```{r}
+readRDS("../data/chr19_expr_10mb.rds") -> expr
+colnames(expr)
+```
+
+```{r}
+ann80 <- rr3 %>%
+  select(gene1, gene1_marker.id, gene1_symbol) %>%
+  filter(!duplicated(gene1_symbol))
+fit1_out <- list()
+for (i in 1:80){
+  pr <- genoprobs$`19`[ , , which(dimnames(genoprobs$`19`)[[3]] == ann80$gene1_marker.id[i])]
+  fit1_out[[i]] <- fit1(genoprobs = pr, 
+       pheno = expr[, which(colnames(expr) == ann80$gene1[i]), drop = FALSE], 
+       kinship = K$`19`, 
+       addcovar = dataset.islet.rnaseq$covar, 
+       reml = TRUE
+       )
+}
+```
+
+```{r}
+sapply(FUN = function(x)x$fitted, X = fit1_out) -> fits
+colnames(fits)
+colnames(fits) <- ann80$gene1
+rownames(fits)
+```
+
+
+```{r}
+cor(fits) -> fitcor
+```
+
+## Create and populate the `fit1_corr` with correlations
+
+```{r}
+rr3$fit1_corr <- NA
+for (i in 1:nrow(rr3)){
+  rr3$fit1_corr[i] <- fitcor[which(rownames(fitcor) == rr3$gene1[i]), which(colnames(fitcor) == rr3$gene2[i])]
+}
+```
+
+
+
+
+```{r}
+rr3 %>%
+  mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
+  ggplot() + geom_point(aes(x = fit1_corr, y = lrt, colour = gene1_lod)) + xlab("Fitted values correlation") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .)
+ggsave(filename = "2018-12-04_lrt-v-corr.jpg")
+ggsave(filename = "2018-12-04_lrt-v-corr.svg")
+
+```
+
+```{r}
+
+```
+
+
+
+

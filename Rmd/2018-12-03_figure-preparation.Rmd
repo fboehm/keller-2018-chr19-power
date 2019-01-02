@@ -1,0 +1,38 @@
+---
+title: "Figure preparation"
+author: "Frederick Boehm"
+date: "12/3/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading the LRT tibbles
+
+We load the tibbles that contain the pleiotropy v separate QTL test statistics for each run: 3104, 3105, 3106, 3107. We see that the code to prepare these tibbles is in "2018-11-25-assemble-2d-scans-run3103.Rmd". Despite the misnomer file name, it contains the code for runs 3104, 3105, 3106, and 3107 tibble creation. Each tibble has 79 rows, one row for each test (ie, each pair of traits). Recall that the runs differ in the "anchor" gene. That is, there are four total "anchor" genes: one for each run.
+
+
+```{r}
+library(qtl2pleio)
+```
+
+```{r}
+r3104 <- read_csv("2018-11-26_lrt-tibble.csv")
+r3105 <- read_csv("2018-12-03_lrt-tibble-run3105.csv")
+r3106 <- read_csv("2018-12-03_lrt-tibble-run3106.csv")
+r3107 <- read_csv("2018-12-03_lrt-tibble-run3107.csv")
+```
+
+
+
+## Calculate correlations between traits based on founder allele effects
+
+We first load the expression traits themselves, for those traits in the 20-Mb region.
+
+
+
+### Calculate fitted values (from inferred founder allele effects at peak position) for each of the 80 traits at each trait's respective univariate peak
+
+We want to calculate correlations between "fitted values" for each trait. First, we need to calculate the "fitted values" for each trait, based on the inferred founder allele effects.
