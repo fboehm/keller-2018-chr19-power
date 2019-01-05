@@ -2,28 +2,30 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {2}Methods}{2}{section.2}
+\contentsline {section}{\numberline {2}Methods}{3}{section.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.1}Data description}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.1}Data description}{3}{subsection.2.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.2}Study design}{2}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.2}Study design}{3}{subsection.2.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.3}Calculating pleiotropy vs. separate QTL likelihood ratio test statistics}{4}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.3}Univariate QTL LOD calculations}{4}{subsection.2.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.4}Estimating founder allele effects}{4}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.4}Estimating founder allele effects}{5}{subsection.2.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.5}Univariate QTL LOD calculations}{4}{subsection.2.5}
+\contentsline {subsection}{\numberline {2.5}Two-dimensional QTL scans}{5}{subsection.2.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {3}Results}{4}{section.3}
+\contentsline {subsection}{\numberline {2.6}Calculating pleiotropy vs. separate QTL likelihood ratio test statistics}{5}{subsection.2.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.1}Allele effects plots for the four anchor genes}{4}{subsection.3.1}
+\contentsline {section}{\numberline {3}Results}{5}{section.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.2}Pleiotropy LRT vs. chromosomal position}{4}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.1}Allele effects plots for the four anchor genes}{5}{subsection.3.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.3}Pleiotropy likelihood ratio test statistics vs. univariate LOD}{4}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.2}Pleiotropy LRT vs. chromosomal position}{5}{subsection.3.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.4}Pleiotropy LRT vs. fitted values correlation}{4}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.3}Pleiotropy likelihood ratio test statistics vs. univariate LOD peak heights}{5}{subsection.3.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4}Discussion}{4}{section.4}
+\contentsline {subsection}{\numberline {3.4}Pleiotropy LRT vs. fitted values correlation}{5}{subsection.3.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5}References}{4}{section.5}
+\contentsline {section}{\numberline {4}Discussion}{5}{section.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5}References}{5}{section.5}

@@ -7,8 +7,6 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color {orange}o}}\ add peak position}{3}{section*.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color {orange}o}}\ Add 1. annotations table for 4 anchor genes; 2. annotations table for 76 other (not anchor) genes}{3}{section*.9}
+\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color {orange}o}}\ elaborate on this idea. Refer to the Rmd file for exact procedure}{4}{section*.10}
 \defcounter {refsection}{0}\relax 
-\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color {orange}o}}\ allele effects plots for the four anchor genes. Make them as separate figures in R, then, in latex, combine into a multi-panel figure.}{3}{section*.10}
-\defcounter {refsection}{0}\relax 
-\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color {orange}o}}\ see R code for details of scan region, etc. How many markers in scan region? What are the start and end positions for the scan?}{4}{section*.11}
+\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color {orange}o}}\ see R code for details of scan region, etc. How many markers in scan region? What are the start and end positions for the scan?}{5}{section*.11}

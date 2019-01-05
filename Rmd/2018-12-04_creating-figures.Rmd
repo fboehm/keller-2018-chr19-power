@@ -2,7 +2,7 @@
 title: "Creating figures with LRTs"
 author: "Frederick Boehm"
 date: "12/4/2018"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -87,8 +87,11 @@ ggplotly(pp)
 rr3 %>%
   mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
   ggplot() + geom_point(aes(x = gene1_middle, y = lrt, colour = gene1_lod)) + geom_vline(aes(xintercept = gene2_middle)) + xlab("Chromosome 19 position") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .)
-ggsave(filename = "2018-12-04_lrt-v-middle-of-gene.jpg")
-ggsave(filename = "2018-12-04_lrt-v-middle-of-gene.svg")
+ggsave(filename = "lrt-v-middle-of-gene.jpg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-middle-of-gene.svg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-middle-of-gene.eps", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-middle-of-gene.pdf", width = 7, height = 7, units = "in" )
+
 ```
 
 ## LRT v univariate LOD by anchor gene
@@ -98,8 +101,10 @@ ggsave(filename = "2018-12-04_lrt-v-middle-of-gene.svg")
 rr3 %>%
   mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
   ggplot() + geom_point(aes(x = gene1_lod, y = lrt, colour = gene1_lod)) + xlab("Univariate LOD") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .)
-ggsave(filename = "2018-12-04_lrt-v-univariate-lod.jpg")
-ggsave(filename = "2018-12-04_lrt-v-univariate-lod.svg")
+ggsave(filename = "lrt-v-univariate-lod.jpg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-univariate-lod.svg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-univariate-lod.eps", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-univariate-lod.pdf", width = 7, height = 7, units = "in" )
 
 ```
 
@@ -171,15 +176,118 @@ for (i in 1:nrow(rr3)){
 rr3 %>%
   mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
   ggplot() + geom_point(aes(x = fit1_corr, y = lrt, colour = gene1_lod)) + xlab("Fitted values correlation") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .)
-ggsave(filename = "2018-12-04_lrt-v-corr.jpg")
-ggsave(filename = "2018-12-04_lrt-v-corr.svg")
+ggsave(filename = "lrt-v-corr.jpg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-corr.svg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-corr.eps", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-corr.pdf", width = 7, height = 7, units = "in" )
 
+```
+
+## Allele effects plots
+
+We now create founder allele effects plots for the four anchor genes: Asah2, Lipo1, Lipo2, and the fourth gene.
+
+We first need the Ensembl ids for the four genes.
+
+```{r}
+unique(rr2$gene2) -> id4
+unique(rr2$gene2_symbol) -> id4_symbols
+expr4 <- expr[ , colnames(expr) %in% id4]
 ```
 
 ```{r}
-
+out4 <- list()
+for (i in 1:4){
+  out4[[i]] <- scan1coef(genoprobs = list(genoprobs$`19`), 
+            pheno = expr4[ , i, drop = FALSE], 
+            kinship = K$`19`, 
+            addcovar = dataset.islet.rnaseq$covar, 
+            reml = TRUE)
+}
 ```
 
+
+
+```{r}
+for (i in 1:4){
+  if (i == 1){
+    leg <- "bottomright"
+  } else {
+    leg <- NULL
+  }
+  uni_peak_pos <- nodup %>%
+    filter(gene2_symbol == id4_symbols[i]) %>%
+    select(gene2_pos) %>%
+    unlist()
+  epsfn <- paste0("allele_effects_", id4_symbols[i], ".eps")
+  pdffn <- paste0("allele_effects_", id4_symbols[i], ".pdf")
+  setEPS()
+  postscript(epsfn, 
+             width = 6, 
+             height = 4
+             )
+  plot_coefCC(out4[[i]], 
+              map = map[19], 
+              legend = leg, 
+              ylim = c(- 2.5, 2.5), 
+              legend_ncol = 4
+              )
+  text(x = 50, 
+       y = 2, 
+       labels = id4_symbols[i]
+       )
+  #abline(v = uni_peak_pos)
+  dev.off()
+  pdf(pdffn, 
+      width = 6, 
+      height = 4
+      )
+  cex_all <- 0.75
+  par(cex = cex_all)
+  plot_coefCC(out4[[i]], 
+              map = map[19], 
+              legend = leg, 
+              ylim = c(- 2.5, 3), 
+              legend_ncol = 4, 
+              )
+  text(x = 50, 
+       y = 2, 
+       labels = id4_symbols[i],
+       cex = 1.5 / cex_all
+       )
+  #abline(v = uni_peak_pos)
+  dev.off()
+}
+```
+
+## Make tables for inclusion in .tex file
+
+```{r}
+library(xtable)
+```
+
+We make a xtable for the 
+
+```{r, results = "asis"}
+nodup %>%
+  select(gene2_symbol, gene2_start, gene2_end, gene2_pos, gene2_lod) %>%
+  rename(symbol = gene2_symbol, start = gene2_start, end = gene2_end, peak_position = gene2_pos, lod = gene2_lod) %>% 
+  xtable() %>%
+  print.xtable(include.rownames = FALSE)
+```
+
+Make the table for the 76 non-anchor genes.
+
+```{r}
+rr3 %>%
+  select(gene1_symbol, gene1_start, gene1_end, gene1_pos, gene1_lod) %>%
+  rename(symbol = gene1_symbol, start = gene1_start, end = gene1_end, peak_position = gene1_pos, lod = gene1_lod) %>%
+  filter(!duplicated(symbol)) %>%
+  filter(!(symbol %in% c("Asah2", "Lipo1", "Lipo2", "4933413C19Rik"))) %>%
+  arrange(desc(lod))%>% 
+  xtable() %>%
+  print.xtable(include.rownames = FALSE, size = "\\tiny")
+```
 
 
 

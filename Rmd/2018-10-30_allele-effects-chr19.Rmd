@@ -88,6 +88,8 @@ trait_ids_10mb <- dat %>%
 
 ```
 
+
+
 ```{r}
 expr_chr19_10mb <- dataset.islet.rnaseq$expr[ , 
                            colnames(dataset.islet.rnaseq$expr) %in% trait_ids_10mb, 
@@ -105,6 +107,11 @@ which(m19_tib$position > 22)[1]
 which(m19_tib$position > 42)[1]
 ```
 
+
+
+
+
+
 ## Calculate allele effects for Asah2
 
 ```{r}
@@ -118,6 +125,22 @@ s1c_asah2 <- scan1coef(genoprobs = genoprobs[, 19], pheno = asah2_expr, kinship 
 ```{r}
 plot_coefCC(x = s1c_asah2, map = map)
 ```
+
+## Identify possible anchor genes near Asah2
+
+```{r}
+dat %>%
+  filter(lod > 55, pos < asah2_pos + 4, pos > asah2_pos - 4)
+```
+
+```{r}
+dat %>%
+  filter(gene_id %in% traits_of_interest)
+```
+
+
+
+
 
 ## Calculate allele effects for many traits near Asah2
 
@@ -140,6 +163,7 @@ for (i in 1:length(traits_of_interest)){
 
 }
 ```
+
 
 ```{r}
 for (i in 1:length(s1c_out)){
@@ -199,9 +223,11 @@ Which gene expression trait is the least correlated with the others?
 
 ```{r}
 apply(FUN = prod, X = cormat, MARGIN = 1)
+apply(FUN = mean, X = abs(cormat), MARGIN = 1)
+
 ```
 
-It looks like ENSMUSG00000087303 and ENSMUSG00000024766 are the least correlated with the others, while ENSMUSG00000089952 has the highest mean correlation with the other traits. Note also that the minimal (absolute value) entry in the correlation matrix above is between ENSMUSG00000087303 and ENSMUSG00000024766.
+It looks like ENSMUSG00000087303 and ENSMUSG00000024766 (and ENSMUSG00000079344) are the least correlated with the others, while ENSMUSG00000089952 has the highest mean correlation with the other traits. Note also that the minimal (absolute value) entry in the correlation matrix above is between ENSMUSG00000087303 and ENSMUSG00000024766.
 
-
+From these, we chose two traits that have lower mean (absolute) correlation values and one that has higher mean absolute correlation. 
 
