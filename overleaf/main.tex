@@ -40,27 +40,36 @@
 
 \section{Introduction}
 
+The goal of this section is to characterize the statistical power of our pleiotropy vs. separate QTL test under a variety of conditions by studying a real data set. We examine pancreatic islet expression traits from the \citet{keller2018genetic} data. As in chapters 2 and 3A, we test only two traits at a time. Because we’ve chosen local expression traits in our analysis, we both know where each trait’s true QTL location (approximately), and we anticipate that each trait has a unique QTL that is distinct from QTL for other local expression traits. This design thus provides opportunities to study statistical power for our test.
 
+We anticipate that inter-locus distance, univariate QTL strength, and correlation of founder allele effects patterns are three factors that contribute to power for our test. Specifically, we expect that greater inter-locus distance, greater univariate LOD peak heights, and less similar founder allele effects patterns correspond to greater statistical power to detect two separate QTL. 
 
-The goal of this section is to characterize the statistical power of our pleiotropy vs. separate QTL test under a variety of conditions by studying a real data set. We examine pancreatic islet expression traits from the \citet{keller2018genetic} data. As in chapter 2 and 3A, we test only two traits at a time. Because we’ve chosen local expression traits in our analysis, we both know where each trait’s true QTL location (approximately), and we anticipate that each trait has a unique QTL that is distinct from QTL for other local expression traits. This design thus provides opportunities to study statistical power for our test.
+We use pancreatic islet gene expression traits from a publicly available data set, which \citet{keller2018genetic} first collected, analyzed, and shared. We examine a collection of 80 local traits on Chromosome 19 and perform our test for pleiotropy vs. separate QTL on pairs of traits. We also examine pairwise relationships among gene expression traits to characterize the impacts of univariate LOD peak height, inter-locus distance, and similarity of founder allele effects patterns on pleiotropy vs. separate QTL test statistic values.
+
 
 
 \section{Methods}
 
 \subsection{Data description}
 
-We made use of publicly available gene expression data and genotype data from 378 Diversity Outbred mice \citep{keller2018genetic}. 
+We analyzed data from 378 Diversity Outbred mice \citep{keller2018genetic}. \citet{keller2018genetic} genotyped tail biopsies with the GigaMUGA microarray \citep{morgan2016mouse}. They also used RNA sequencing to measure genome-wide pancreatic islet cell gene expression for each mouse at the time of sacrifice \citep{keller2018genetic}. They shared these data, together with inferred founder allele probabilities, on the Data Dryad site (\url{https://datadryad.org/resource/doi:10.5061/dryad.pj105}). 
 
+We downloaded the file "Attie\_DO378\_eQTL\_viewer\_v1.Rdata" from Data Dryad \citep{keller2018genetic} and analyzed the data in the R statistical computing environment \citep{r}. We used the R packages \texttt{qtl2} \citep{Broman2018} and \texttt{qtl2pleio} \citep{qtl2pleio} in our analyses. 
 
 \subsection{Study design}
-The goal of the study is to examine statistical power of our test of pleiotropy v separate QTL. To do this, we focus on 80 local expression QTL and their corresponding transcript levels. Here, we define a local expression QTL to be an expression QTL that is on the same chromosome as the gene itself. For example, the Asah2 gene is located on Chromosome 19 and its transcript levels have an expression QTL on Chromosome 19 \todo[inline]{add annotation info for Asah2 \& its eQTL}. Thus, we term the Chromosome 19 expression QTL a "local" expression QTL. 
+
+To do this, we focus on 80 local expression QTL and their corresponding transcript levels. Here, we define a local expression QTL to be an expression QTL that is on the same chromosome as the gene itself. For example, the Asah2 gene is located on Chromosome 19 and its transcript levels have an expression QTL on Chromosome 19 (Table \ref{tab:ann4}). Thus, we term the Chromosome 19 Asah2 expression QTL a ``local'' expression QTL. 
 
 We choose to focus on local expression QTL, while ignoring nonlocal expression QTL, because we know, approximately, the true locations for local expression QTL. That is, a local expression QTL is near the corresponding gene position. Additionally, we expect that a given local expression QTL affects only one local expression trait. In our example above, we expect that the Asah2 expression QTL is near the Asah2 gene position and that no other local expression traits map to it.
 
-We use pancreatic islet gene expression traits from a publicly available data set, which \citet{keller2018genetic} first collected and analyzed. We examine a collection of 80 local traits on Chromosome 19 and perform our test for pleiotropy vs. separate QTL on pairs of traits. \todo[inline]{check R code - did I check for distance between QTL peak and gene start site? ie, when defining "local gene" QTL peaks}
 
-Our design involves us first choosing a set of four "anchor" expression traits. Each "anchor" expression trait has a univariate LOD score above 10. The corresponding genes are located near the center of Chromosome 19. We then perform tests of pleiotropy v separate QTL for it paired with each other local trait that has LOD score above 10 and is within 10 Mb of the peak position for the anchor gene Asah2.
-Gene Asah2 is located near the center of Chromosome 19 and has a local expression QTL with a peak at $$\_$$ \todo[inline]{add peak position} on Chromosome 19. We identified a set of 79 other expression traits that map to the 20-Mb region centered on the peak for Asah2, at 32.1 Mb. Each trait among the 79 maps to Chromosome 19 with a univariate LOD of at least 10. 
+Our design involves selection of a set of ``anchor'' expression traits. Gene Asah2 is located near the center of Chromosome 19 and has a very strong local expression QTL (Table \ref{tab:ann4}). We chose it as our first ``anchor'' gene expression trait. To diversify our collection of anchor genes, we chose three additional expression traits with local expression QTL. These three are Lipo1, Lipo2, and 4933413C19Rik (Table \ref{tab:ann4}). Together, the four anchor genes represent a variety of local expression trait LOD peak heights (from 60 to 101) and demonstrate modest variability in their founder allele effects patterns (Figure \ref{fig:founder-allele-effects}). All four anchor genes are located near the middle of Chromosome 19.  
+
+
+
+
+We then perform tests of pleiotropy v separate QTL for it paired with each other local trait that has LOD score above 10 and is within 10 Mb of the peak position for the anchor gene Asah2.
+Gene Asah2 is located near the center of Chromosome 19 and has a local expression QTL with a peak at $$\_$$ \todo[inline]{add peak position} on Chromosome 19. We identified a set of 76 non-anchor local expression traits that map to the 20-Mb region centered on the peak for Asah2, at 32.1 Mb. Each trait among the 76 maps to Chromosome 19 with a univariate LOD of at least 10. 
 
 
 % latex table generated in R 3.5.2 by xtable 1.8-3 package
@@ -83,17 +92,17 @@ Asah2 & 31.98 & 32.06 & 32.14 & 101.20 \\
 
 
 
-In addition to Asah2, we chose 3 other "anchor" genes that flank the Asah2 gene position. These are: Lipo1, Lipo2, and 4933413C19Rik. We chose these because they represent different founder allele effects patterns despite being within 4 Mb of the Asah2 gene start position.  \todo{elaborate on this idea. Refer to the Rmd file for exact procedure}. Furthermore, they all had univariate LOD peak heights above 60. A total of eight genes (not including Asah2) met the criteria of being within 4 Mb of the Asah2 gene position and having a local QTL with a LOD peak height of at least 60. We elected to focus our study on Asah2 and three additional genes to limit the needed calculations. The choice of Lipo1, Lipo2, and 4933413C19Rik from among the eight genes was arbitrary. However, we wanted a collection of few genes that represented a range of univariate LOD values. We also sought traits that collectively represented a variety of founder allele effects patterns. Our four studied traits all share a strong PWK founder allele effect and demonstrate a variety of patterns among the other seven founder allele effects. 
+In addition to Asah2, we chose 3 other anchor genes that flank the Asah2 gene position. These are: Lipo1, Lipo2, and 4933413C19Rik. We chose these because they represent different founder allele effects patterns despite being within 4 Mb of the Asah2 gene start position.  \todo{elaborate on this idea. Refer to the Rmd file for exact procedure}. Furthermore, they all had univariate LOD peak heights above 60. A total of eight genes (not including Asah2) met the criteria of being within 4 Mb of the Asah2 gene position and having a local QTL with a LOD peak height of at least 60. We elected to focus our study on Asah2 and three additional genes to limit the needed calculations. The choice of Lipo1, Lipo2, and 4933413C19Rik from among the eight genes was arbitrary. However, we wanted a collection of few genes that represented a range of univariate LOD values. We also sought traits that collectively represented a variety of founder allele effects patterns. Our four studied traits all share a strong PWK founder allele effect and demonstrate a variety of patterns among the other seven founder allele effects. 
 
 \subsection{Univariate QTL LOD calculations}
 
-\citet{keller2018genetic} shared univariate QTL mapping results in their file on Data Dryad. At each marker across the genome, they fitted the model:
+\citet{keller2018genetic} shared univariate QTL mapping results in their file on Data Dryad. For a given univariate QTL scan, they fitted the following model at every marker:
 
 \begin{equation}
 Y = XB + WC + G + E
 \end{equation}
 
-\noindent where $Y$ is a n by 1 matrix containing measured values for a single phenotype, $X$ is a n by 8 matrix of founder allele dosages, $B$ is a 8 by 1 matrix of founder allele effects, $W$ is a n by 4 matrix of covariates (sex and three wave indicators), $C$ is a 4 by 1 matrix of covariate effects, $G$ is a n by 1 matrix of polygenic random effects, and $E$ is a n by 1 matrix of random errors. They also assumed that $G$ and $E$ are independent and that 
+\noindent where $Y$ is a n by 1 matrix containing measured values for a single phenotype, $X$ is a n by 8 matrix of founder allele dosages for a single marker, $B$ is a 8 by 1 matrix of founder allele effects, $W$ is a n by 4 matrix of covariates (sex and three wave indicators), $C$ is a 4 by 1 matrix of covariate effects, $G$ is a n by 1 matrix of polygenic random effects, and $E$ is a n by 1 matrix of random errors. They also assumed that $G$ and $E$ are independent and that 
 
 \begin{equation}
 G \sim N(0, \sigma_g^2K)
@@ -104,11 +113,13 @@ E \sim N(0, \sigma_e^2I)
 \end{equation}
 
 
-The model fitting procedure involves first an expectation - maximization algorithm to estimate the variance components. The model above is fitted, but without any genotype data. They then used generalized least squares to fit the models with genotype data. Implicitly, this procedure assumes that the covariance matrix does not depend on the genotype data. The R package \texttt{qtl2} implements this procedure. 
+The model fitting procedure involves first an expectation - maximization algorithm to estimate the variance components \citep{broman2018}. The model above is fitted, but without inclusion of genotype data. A $n$ by $1$ of $1$'s replaces the $n$ by $8$ matrix of founder allele probabilities. Because they ignored founder allele probabilities, variance components are estimated only once for each trait. 
+
+\citet{keller2018genetic} then used generalized least squares to fit the models with genotype data. Implicitly, this procedure assumes that the covariance matrix does not depend on the genotype data. The R package \texttt{qtl2} implements this procedure \citep{broman2018}. 
 
 \subsection{Estimating founder allele effects}
 
-We estimated founder allele effects from the model above. Specifically, we calculated:
+For each Chromosome 19 marker, we estimated founder allele effects from the model above. Specifically, we calculated:
 
 \begin{equation}
 \hat (B:C) = \left((X:W)^T\Sigma^{-1}(X:W)\right)^{-1}(X:W)^T\Sigma^{-1}Y
@@ -116,9 +127,33 @@ We estimated founder allele effects from the model above. Specifically, we calcu
 
 \subsection{Two-dimensional QTL scans}
 
-We performed two-dimensional QTL scans for 4 x 76 + 4 choose 2 = 310 pairs. Each pair included one of the four "anchor" gene expression traits and either one of 76 "nonanchor" gene expression traits or one of the remaining three "anchor" gene expression traits. 
+We performed two-dimensional QTL scans for 4 x 76 + 4 choose 2 = 310 pairs. Each pair included one of the four "anchor" gene expression traits and either one of 76 non-anchor gene expression traits or one of the remaining three anchor gene expression traits. 
 
-Our scan encompassed a 1000 by 1000 marker grid from 18.1 Mb to 42.5 Mb on Chromosome 19. Each scan involved fitting 1000 x 1000 linear models via generalized least squares after first estimating the variance components for the model without genotype data. 
+Our two-dimensional QTL scan encompassed a 1000 by 1000 marker grid from 18.1 Mb to 42.5 Mb on Chromosome 19. Each scan involved fitting 1000 x 1000 = 1,000,000 linear models via generalized least squares after first estimating the variance components for the model without genotype data. For a given ordered pair of markers, we used the model:
+
+\begin{equation}
+vec(Y) = Xvec(B) + vec(G) + vec(E)
+\end{equation}
+
+where $Y$ is a $n$ by $2$ matrix containing measurements for two traits on each of $n$ mice, $B$ is a $12 by $2$ matrix of effects for the eight founder alleles and four covariates, $G$ is a $n$ by $2$ matrix of polygenic random effects, and $E$ is a $n$ by $2$ matrix of random errors. $X$ is a $2n$ by $24$ block-diagonal matrix containing two $n$ by $12$ submatrices on the diagonal. Each of these two submatrices contains eight founder allele probabilities at one marker and the four covariates (sex and three wave indicators). The operator $vec$ stacks the columns of a matrix into a single column. For example, in the model above, $vec(Y)$ is a $2n$ by $1$ matrix. 
+
+We impose distributional assumptions on $G$ and $E$, which are assumed to be independent.
+
+\begin{equation}
+G \sim MN_{\text{n by 2}}(0, K, V_g)
+\end{equation}
+
+\begin{equation}
+E \sim MN_{\text{n by 2}}(0, I, V_e)
+\end{equation}
+
+\subsubsection{Model fitting procedure}
+
+Our model fitting procedure relies on first estimating variance components $V_g$ and $V_e$ and then using generalized least squares to obtain a matrix $\hat B$ for which we calculate the log-likelihood.
+
+
+
+We estimated variance components in the 
 
 
 
@@ -163,7 +198,7 @@ Our scan encompassed a 1000 by 1000 marker grid from 18.1 Mb to 42.5 Mb on Chrom
     \begin{subfigure}[t]{0.5\linewidth}
         \includegraphics[width = \linewidth]{../Rmd/allele_effects_4933413C19Rik.pdf}
     \end{subfigure}
-        \caption{Founder allele effects plots for Chromosome 19 for the four "anchor" gene expression traits reveal strong PWK effects (red line) for all four traits. For Asah2 (upper left panel), WSB has a strong negative effect, opposite the direction of the PWK effect. }
+        \caption{Founder allele effects plots for Chromosome 19 for the four "anchor" gene expression traits reveal strong PWK effects (red line) for all four traits. For Asah2 (upper left panel), WSB has a strong negative effect, opposite the direction of the PWK effect.}\label{fig:founder-allele-effects}
 \end{figure}
 
 
