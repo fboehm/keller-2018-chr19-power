@@ -59,14 +59,9 @@ $(RMD_DIR)/lrt-v-univariate-lod.eps: $(RMD_DIR)/$(RMD_FILE) $(RMD_DIR)/2018-11-2
 $(RMD_DIR)/lrt-v-corr.eps: $(RMD_DIR)/$(RMD_FILE) $(RMD_DIR)/2018-11-26_lrt-tibble.csv $(RMD_DIR)/2018-12-03_lrt-tibble-run3105.csv $(RMD_DIR)/2018-12-03_lrt-tibble-run3106.csv $(RMD_DIR)/2018-12-03_lrt-tibble-run3107.csv ../data/Attie_DO378_eQTL_viewer_v1.Rdata ../data/chr19_expr_10mb.rds
 	Rscript -e 'rmarkdown::render("$<")'
 
-$(PROJNAME).pdf: $(PROJNAME).tex $(RMD_DIR)/lrt-v-middle-of-gene.pdf $(RMD_DIR)/lrt-v-univariate-lod.pdf $(RMD_DIR)/lrt-v-corr.pdf $(RMD_DIR)/allele_effects_4933413C19Rik.pdf $(RMD_DIR)/allele_effects_Asah2.pdf $(RMD_DIR)/allele_effects_Lipo1.pdf $(RMD_DIR)/allele_effects_Lipo2.pdf
-	$(LATEXMK) -pdf -pdflatex="pdflatex -interactive=nonstopmode" -use-make $<
+$(PROJNAME).pdf: $(PROJNAME).tex 
+	latexmk -pdf -use-make -pvc $<
 
-preview: $(PROJNAME).pdf
-  $(LATEXMK) -pdf -pdflatex="pdflatex -interactive=nonstopmode" -use-make -pv $(PROJNAME).tex
-  
-pvc: $(PROJNAME).pdf
-  $(LATEXMK) -pdf -pdflatex="pdflatex -interactive=nonstopmode" -use-make -pvc $(PROJNAME).tex
 
 $(RMD_DIR)/$(HTML_FILE): $(RMD_DIR)/$(RMD_FILE)
 	Rscript -e 'rmarkdown::render("$<")'

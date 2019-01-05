@@ -54,11 +54,11 @@ We use pancreatic islet gene expression traits from a publicly available data se
 
 We analyzed data from 378 Diversity Outbred mice \citep{keller2018genetic}. \citet{keller2018genetic} genotyped tail biopsies with the GigaMUGA microarray \citep{morgan2016mouse}. They also used RNA sequencing to measure genome-wide pancreatic islet cell gene expression for each mouse at the time of sacrifice \citep{keller2018genetic}. They shared these data, together with inferred founder allele probabilities, on the Data Dryad site (\url{https://datadryad.org/resource/doi:10.5061/dryad.pj105}). 
 
-We downloaded the file "Attie\_DO378\_eQTL\_viewer\_v1.Rdata" from Data Dryad \citep{keller2018genetic} and analyzed the data in the R statistical computing environment \citep{r}. We used the R packages \texttt{qtl2} \citep{Broman2018} and \texttt{qtl2pleio} \citep{qtl2pleio} in our analyses. 
+We downloaded the file "Attie\_DO378\_eQTL\_viewer\_v1.Rdata" from Data Dryad \citep{keller2018genetic} and analyzed the data in the R statistical computing environment \citep{r}. We used the R packages \texttt{qtl2} \citep{broman2018} and \texttt{qtl2pleio} \citep{qtl2pleio} in our analyses. 
 
 \subsection{Study design}
 
-To do this, we focus on 80 local expression QTL and their corresponding transcript levels. Here, we define a local expression QTL to be an expression QTL that is on the same chromosome as the gene itself. For example, the Asah2 gene is located on Chromosome 19 and its transcript levels have an expression QTL on Chromosome 19 (Table \ref{tab:ann4}). Thus, we term the Chromosome 19 Asah2 expression QTL a ``local'' expression QTL. 
+To do this, we focus on 80 local expression QTL and their corresponding transcript levels. Here, we define a local expression QTL to be an expression QTL that is on the same chromosome as the gene itself. For example, the Asah2 gene is located on Chromosome 19 and its transcript levels have an expression QTL on Chromosome 19 (Table \ref{tab:ann4}). Thus, we term the Chromosome 19 Asah2 expression QTL a local expression QTL. 
 
 We choose to focus on local expression QTL, while ignoring nonlocal expression QTL, because we know, approximately, the true locations for local expression QTL. That is, a local expression QTL is near the corresponding gene position. Additionally, we expect that a given local expression QTL affects only one local expression trait. In our example above, we expect that the Asah2 expression QTL is near the Asah2 gene position and that no other local expression traits map to it.
 
@@ -69,7 +69,7 @@ Our design involves selection of a set of ``anchor'' expression traits. Gene Asa
 
 
 We then perform tests of pleiotropy v separate QTL for it paired with each other local trait that has LOD score above 10 and is within 10 Mb of the peak position for the anchor gene Asah2.
-Gene Asah2 is located near the center of Chromosome 19 and has a local expression QTL with a peak at $$\_$$ \todo[inline]{add peak position} on Chromosome 19. We identified a set of 76 non-anchor local expression traits that map to the 20-Mb region centered on the peak for Asah2, at 32.1 Mb. Each trait among the 76 maps to Chromosome 19 with a univariate LOD of at least 10. 
+Gene Asah2 is located near the center of Chromosome 19 and has a local expression QTL on Chromosome 19. We identified a set of 76 non-anchor local expression traits that map to the 20-Mb region centered on the peak for Asah2, at 32.1 Mb. Each trait among the 76 maps to Chromosome 19 with a univariate LOD of at least 10. 
 
 
 % latex table generated in R 3.5.2 by xtable 1.8-3 package
@@ -86,7 +86,7 @@ Asah2 & 31.98 & 32.06 & 32.14 & 101.20 \\
   4933413C19Rik & 28.58 & 28.58 & 28.78 & 60.41 \\ 
    \hline
 \end{tabular}
-\caption{}\label{tab:ann4}
+\caption{Annotations for four anchor genes.}\label{tab:ann4}
 \end{table}
 
 
@@ -122,7 +122,7 @@ The model fitting procedure involves first an expectation - maximization algorit
 For each Chromosome 19 marker, we estimated founder allele effects from the model above. Specifically, we calculated:
 
 \begin{equation}
-\hat (B:C) = \left((X:W)^T\Sigma^{-1}(X:W)\right)^{-1}(X:W)^T\Sigma^{-1}Y
+\widehat {(B:C)} = \left((X:W)^T\Sigma^{-1}(X:W)\right)^{-1}(X:W)^T\Sigma^{-1}Y
 \end{equation}
 
 \subsection{Two-dimensional QTL scans}
@@ -135,7 +135,7 @@ Our two-dimensional QTL scan encompassed a 1000 by 1000 marker grid from 18.1 Mb
 vec(Y) = Xvec(B) + vec(G) + vec(E)
 \end{equation}
 
-where $Y$ is a $n$ by $2$ matrix containing measurements for two traits on each of $n$ mice, $B$ is a $12 by $2$ matrix of effects for the eight founder alleles and four covariates, $G$ is a $n$ by $2$ matrix of polygenic random effects, and $E$ is a $n$ by $2$ matrix of random errors. $X$ is a $2n$ by $24$ block-diagonal matrix containing two $n$ by $12$ submatrices on the diagonal. Each of these two submatrices contains eight founder allele probabilities at one marker and the four covariates (sex and three wave indicators). The operator $vec$ stacks the columns of a matrix into a single column. For example, in the model above, $vec(Y)$ is a $2n$ by $1$ matrix. 
+where $Y$ is a $n$ by $2$ matrix containing measurements for two traits on each of $n$ mice, $B$ is a $12$ by $2$ matrix of effects for the eight founder alleles and four covariates, $G$ is a $n$ by $2$ matrix of polygenic random effects, and $E$ is a $n$ by $2$ matrix of random errors. $X$ is a $2n$ by $24$ block-diagonal matrix containing two $n$ by $12$ submatrices on the diagonal. Each of these two submatrices contains eight founder allele probabilities at one marker and the four covariates (sex and three wave indicators). The operator $vec$ stacks the columns of a matrix into a single column. For example, in the model above, $vec(Y)$ is a $2n$ by $1$ matrix. 
 
 We impose distributional assumptions on $G$ and $E$, which are assumed to be independent.
 
