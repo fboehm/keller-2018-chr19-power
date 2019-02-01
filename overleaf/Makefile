@@ -60,7 +60,7 @@ $(RMD_DIR)/lrt-v-corr.eps: $(RMD_DIR)/$(RMD_FILE) $(RMD_DIR)/2018-11-26_lrt-tibb
 	Rscript -e 'rmarkdown::render("$<")'
 
 $(PROJNAME).pdf: $(PROJNAME).tex 
-	latexmk -pdf -use-make -pvc $<
+	latexmk -pdf -use-make $<
 
 
 $(RMD_DIR)/$(HTML_FILE): $(RMD_DIR)/$(RMD_FILE)

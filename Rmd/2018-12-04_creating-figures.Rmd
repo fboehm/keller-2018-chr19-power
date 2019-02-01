@@ -100,13 +100,37 @@ ggsave(filename = "lrt-v-middle-of-gene.pdf", width = 7, height = 7, units = "in
 ```{r}
 rr3 %>%
   mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
-  ggplot() + geom_point(aes(x = gene1_lod, y = lrt, colour = gene1_lod)) + xlab("Univariate LOD") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .)
+  mutate(interlocus_distance = abs(gene1_middle - gene2_middle)) %>%
+  ggplot() + geom_point(aes(x = gene1_lod, y = lrt, color = interlocus_distance)) + 
+  xlab("Univariate LOD") + 
+  ylab("Pleiotropy v separate QTL test statistic") + 
+  facet_grid(rows = gene2_symbol_factor ~ .)
 ggsave(filename = "lrt-v-univariate-lod.jpg", width = 7, height = 7, units = "in" )
 ggsave(filename = "lrt-v-univariate-lod.svg", width = 7, height = 7, units = "in" )
 ggsave(filename = "lrt-v-univariate-lod.eps", width = 7, height = 7, units = "in" )
 ggsave(filename = "lrt-v-univariate-lod.pdf", width = 7, height = 7, units = "in" )
 
 ```
+
+### LRT v univariate LOD, with loess
+
+```{r}
+rr3 %>%
+  mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
+  ggplot() + 
+  geom_point(aes(x = gene1_lod, y = lrt)) +
+  xlab("Univariate LOD") + 
+  ylab("Pleiotropy v separate QTL test statistic") + 
+  geom_smooth(aes(x = gene1_lod, y = lrt), span = 1) + 
+  facet_grid(rows = gene2_symbol_factor ~ .)
+ggsave(filename = "lrt-v-univariate-lod-loess.jpg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-univariate-lod-loess.svg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-univariate-lod-loess.eps", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-univariate-lod-loess.pdf", width = 7, height = 7, units = "in" )
+
+```
+
+
 
 
 ## LRT v correlation (between fitted values)
@@ -175,13 +199,40 @@ for (i in 1:nrow(rr3)){
 ```{r}
 rr3 %>%
   mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
-  ggplot() + geom_point(aes(x = fit1_corr, y = lrt, colour = gene1_lod)) + xlab("Fitted values correlation") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .)
+  ggplot() + 
+  guides(color = guide_colourbar(title = "Univariate LOD")) + 
+  #guides(colour = guide_legend(title = "Univariate LOD")) + 
+  geom_point(aes(x = abs(fit1_corr), y = lrt, colour = gene1_lod)) + 
+#  geom_smooth(aes(x = abs(fit1_corr), y = lrt), span = 1) + 
+  xlab("Fitted values (absolute) correlation") + 
+  ylab("Pleiotropy v separate QTL test statistic") + 
+  facet_grid(rows = gene2_symbol_factor ~ .)
 ggsave(filename = "lrt-v-corr.jpg", width = 7, height = 7, units = "in" )
 ggsave(filename = "lrt-v-corr.svg", width = 7, height = 7, units = "in" )
 ggsave(filename = "lrt-v-corr.eps", width = 7, height = 7, units = "in" )
 ggsave(filename = "lrt-v-corr.pdf", width = 7, height = 7, units = "in" )
 
 ```
+
+```{r}
+rr3 %>%
+  mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
+  ggplot() + 
+  guides(color = guide_colourbar(title = "Univariate LOD")) + 
+  #guides(colour = guide_legend(title = "Univariate LOD")) + 
+  geom_point(aes(x = abs(fit1_corr), y = lrt, colour = gene1_lod)) + 
+  geom_smooth(aes(x = abs(fit1_corr), y = lrt), span = 1) + 
+  xlab("Fitted values (absolute) correlation") + 
+  ylab("Pleiotropy v separate QTL test statistic") + 
+  facet_grid(rows = gene2_symbol_factor ~ .)
+ggsave(filename = "lrt-v-corr-loess.jpg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-corr-loess.svg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-corr-loess.eps", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-corr-loess.pdf", width = 7, height = 7, units = "in" )
+```
+
+
+
 
 ## Allele effects plots
 
