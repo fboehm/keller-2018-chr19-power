@@ -253,9 +253,24 @@ for (i in 1:4){
             pheno = expr4[ , i, drop = FALSE], 
             kinship = K$`19`, 
             addcovar = dataset.islet.rnaseq$covar, 
-            reml = TRUE)
+            reml = TRUE,
+            se = FALSE)
 }
+out4se <- list()
+for (i in 1:4){
+  foobar <- scan1coef(genoprobs = list(genoprobs$`19`), 
+            pheno = expr4[ , i, drop = FALSE], 
+            kinship = K$`19`, 
+            addcovar = dataset.islet.rnaseq$covar, 
+            reml = TRUE,
+            se = TRUE)
+  out4se[[i]] <- foobar
+}
+names(out4se) <- colnames(expr4)
+names(out4) <- colnames(expr4)
+  
 ```
+
 
 
 
@@ -311,11 +326,106 @@ for (i in 1:4){
 }
 ```
 
-## Make tables for inclusion in .tex file
+## Make allele effects tables at QTL peaks
+
+We want, instead of the above allele effects plots, to produce a table with allele effects estimates at one marker, ie, the QTL peak position, and their standard errors.
+
+We'll create such a table (8 rows by 2 columns plus rows and column labels) for each of the four anchor genes.
+
+First, Asah2. 
+
+First, I need to access the standard error estimates in the object `out4se`. It's crucial to know that the standard errors are stored as an attribute. Thus, we need use care when accessing them.
+
+We'll use a function from `purrr`, `pluck`.
 
 ```{r}
+#se4 <- list()
+#for (i in 1:4){
+#  se4[[i]] <- pluck(out4se, i, attr_getter("SE")) # note that we need capital letters for SE
+#} # of course, we could use the full power of purrr (and its map functions) to do this loop in one line, I think...
+se4 <- out4se %>%
+  map(pluck(attr_getter("SE")))
+```
+
+Verify that the first entry in `se4` really is the attributes "SE" of the first entry in `out4se`.
+
+```{r}
+at1 <- attributes(out4se[[1]])
+names(at1)
+at1[[4]] # direct from attributes of out4se
+at1[[4]] == se4[[1]]
+```
+
+OK. They agree.
+
+```{r}
+library(qtl2pleio)
 library(xtable)
 ```
+
+We first get the mapping between ensembl id and gene symbol for the four anchors. We then get the peak positions (in Mb) for the four traits on Chromosome 19. Finally, we convert those positions to the map indices in `map$`19``.
+
+```{r}
+# convert map for Chr 19 to a tibble for subsequent merging
+map19_tib <- tibble(marker_position = map$`19`, marker_index = 1:length(map$`19`))
+#
+ann4 <- ann80 %>%
+  filter(gene1 %in% colnames(expr4)) %>%
+  left_join(dataset.islet.rnaseq$lod.peaks, by = c("gene1" = "annot.id")) %>%
+  filter(chrom == 19) %>%
+  left_join(map19_tib, by = c("pos" = "marker_position")) %>%
+  rename(peak_position = pos, peak_marker_index = marker_index) %>% arrange(gene1)
+```
+
+
+
+
+```{r}
+i <- 1
+# be sure that the two objects - out4se (and se4) have the same ordering of genes as ann4!!
+# 
+get_effects_table <- function(peak_index, ae_obj, se_obj, map)
+{
+  ae <- get_effects(marker_index = peak_index, 
+                  allele_effects_matrix = ae_obj, 
+                  map = map
+                  )
+  se <- get_effects(marker_index = peak_index, 
+                  allele_effects_matrix = se_obj, 
+                  map = map
+                  )
+  mytib <- tibble(founder_allele = LETTERS[1:8], ae, se)
+  return(mytib)
+}
+```
+
+```{r}
+get_effects_table(peak_index = ann4$peak_marker_index[1], ae_obj = out4[[1]], se_obj = se4[[1]], map = map$`19`)%>%
+  xtable(caption = ann4$gene1_symbol[1]) %>%
+  print.xtable()
+```
+
+```{r}
+get_effects_table(peak_index = ann4$peak_marker_index[2], ae_obj = out4[[2]], se_obj = se4[[2]], map = map$`19`) %>%
+  xtable(caption = ann4$gene1_symbol[2]) %>%
+  print.xtable()
+```
+
+```{r}
+get_effects_table(peak_index = ann4$peak_marker_index[3], ae_obj = out4[[3]], se_obj = se4[[3]], map = map$`19`) %>%
+  xtable(caption = ann4$gene1_symbol[3]) %>% 
+  print.xtable()
+```
+
+```{r}
+get_effects_table(peak_index = ann4$peak_marker_index[4], ae_obj = out4[[4]], se_obj = se4[[4]], map = map$`19`) %>% 
+  xtable(caption = ann4$gene1_symbol[4]) %>% 
+  print.xtable()
+```
+
+
+## Make tables for inclusion in .tex file
+
 
 We make a xtable for the 
 
