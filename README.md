@@ -4,6 +4,6 @@ materials for study of power in test of pleiotropy v separate QTL with Keller 20
 
 ## Makefile
 
-Makefile, for use with GNU make, recreates the figures needed for overleaf/main.pdf, which is the outputted chapter for my thesis.
+Makefile, for use with GNU make, recreates the figures needed for overleaf/main.pdf, which is the outputted sub-chapter for my thesis.
 
 
