@@ -94,6 +94,16 @@ ggsave(filename = "lrt-v-middle-of-gene.pdf", width = 7, height = 7, units = "in
 
 ```
 
+```{r}
+rr3 %>%
+  mutate(gene2_symbol_factor = factor(gene2_symbol, levels = nodup$gene2_symbol, labels = paste0(nodup$gene2_symbol, " (", round(nodup$gene2_lod, 1), ")"))) %>%
+  ggplot() + geom_point(aes(x = gene1_middle, y = lrt, colour = gene1_lod)) + geom_vline(aes(xintercept = gene2_middle)) + xlab("Chromosome 19 position") + ylab("Pleiotropy v separate QTL test statistic") + facet_grid(rows = gene2_symbol_factor ~ .) + scale_color_gradient(low = "#500707", high = "#ee0909")
+ggsave(filename = "lrt-v-middle-of-gene-slides.svg", width = 9, height = 7, units = "in" )
+```
+
+
+
+
 ## LRT v univariate LOD by anchor gene
 
 
@@ -107,6 +117,8 @@ rr3 %>%
   facet_grid(rows = gene2_symbol_factor ~ .)
 ggsave(filename = "lrt-v-univariate-lod.jpg", width = 7, height = 7, units = "in" )
 ggsave(filename = "lrt-v-univariate-lod.svg", width = 7, height = 7, units = "in" )
+ggsave(filename = "lrt-v-univariate-lod-slides.svg", width = 9, height = 7, units = "in" )
+
 ggsave(filename = "lrt-v-univariate-lod.eps", width = 7, height = 7, units = "in" )
 ggsave(filename = "lrt-v-univariate-lod.pdf", width = 7, height = 7, units = "in" )
 
@@ -272,6 +284,8 @@ names(out4) <- colnames(expr4)
 ```
 
 
+Below, I subset each matrix in `out4` to the multivariate scan region, ie, index 400 to 1399.
+
 
 
 ```{r}
@@ -292,7 +306,7 @@ for (i in 1:4){
              width = 6, 
              height = 4
              )
-  plot_coefCC(out4[[i]], 
+  plot_coefCC(out4[[i]][400:1399, ], 
               map = map[19], 
               legend = leg, 
               ylim = c(- 2.5, 2.5), 
@@ -310,7 +324,7 @@ for (i in 1:4){
       )
   cex_all <- 0.75
   par(cex = cex_all)
-  plot_coefCC(out4[[i]], 
+  plot_coefCC(out4[[i]][400:1399, ], 
               map = map[19], 
               legend = leg, 
               ylim = c(- 2.5, 3), 
